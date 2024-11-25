@@ -12,4 +12,13 @@ class AppTextStyles {
     fontSize: 14,
     fontWeight: FontWeight.bold,
   );
+
+  static const TextStyle titleTab = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle defaultText = TextStyle(
+    fontSize: 14,
+  );
 }

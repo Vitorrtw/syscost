@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:syscost/common/data/data_result.dart';
 import 'package:syscost/common/models/user_model.dart';
 import 'package:syscost/features/login/login_state.dart';
+import 'package:syscost/services/data_services.dart';
 import 'package:syscost/services/secure_storage.dart';
-import 'package:syscost/services/sqlite_data_services.dart';
 
 class LoginController extends ChangeNotifier {
-  final SqliteDataServices _dataService;
+  final DataServices _dataService;
   final SecuredStorage _securedStorage;
 
   LoginController({
-    required SqliteDataServices dataService,
+    required DataServices dataService,
     required SecuredStorage securedStorage,
   })  : _dataService = dataService,
         _securedStorage = securedStorage;

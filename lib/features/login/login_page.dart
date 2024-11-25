@@ -76,23 +76,12 @@ class _LoginPageState extends State<LoginPage> {
         break;
       case LoginStateSuccess:
         Navigator.pop(context);
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          NamedRoute.homePage,
-          (route) => false,
-        );
+        Navigator.pushReplacementNamed(context, NamedRoute.homePage);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPersistentFrameCallback((_) async {
-      await windowManager.center();
-      await windowManager.setTitle("Login");
-      await windowManager.setSize(const Size(600, 400));
-      await windowManager.setMaximizable(false);
-      await windowManager.setResizable(false);
-    });
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(

@@ -20,4 +20,9 @@ abstract class DataServices {
     required String tableName,
     required String where,
   });
+
+  Future<DataResult> deleteWhere({
+    required String tableName,
+    required String where,
+  });
 }

@@ -30,6 +30,27 @@ class SqliteDataServices extends DataServices {
   }
 
   @override
+  Future<DataResult> deleteWhere({
+    required String tableName,
+    required String where,
+  }) async {
+    try {
+      final dataBase = await _dataBaseConnect();
+      final int response = await dataBase.delete(tableName, where: where);
+
+      if (response == 1) {
+        return DataResult.failure(GeneralTextException(
+            textCode: "Erro to delete data in $tableName"));
+      }
+      return DataResult.success(response);
+    } catch (e) {
+      return DataResult.failure(GeneralTextException(
+          textCode:
+              "Error to delete data in table $tableName: Error code ${e.toString()}"));
+    }
+  }
+
+  @override
   Future<DataResult> insertData({
     required String tableName,
     required Map<String, dynamic> data,

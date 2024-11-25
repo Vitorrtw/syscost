@@ -11,5 +11,19 @@ void main() async {
   sqfliteFfiInit();
   setup();
 
+  // Window
+  windowManager.waitUntilReadyToShow(
+    const WindowOptions(
+      size: Size(600, 400),
+      title: "Login",
+      skipTaskbar: false,
+    ),
+    () async {
+      await windowManager.show();
+      await windowManager.setMaximizable(false);
+      await windowManager.center();
+    },
+  );
+
   runApp(const MyApp());
 }
