@@ -38,10 +38,6 @@ class SqliteDataServices extends DataServices {
       final dataBase = await _dataBaseConnect();
       final int response = await dataBase.delete(tableName, where: where);
 
-      if (response == 1) {
-        return DataResult.failure(GeneralTextException(
-            textCode: "Erro to delete data in $tableName"));
-      }
       return DataResult.success(response);
     } catch (e) {
       return DataResult.failure(GeneralTextException(
@@ -58,11 +54,6 @@ class SqliteDataServices extends DataServices {
     try {
       final dataBase = await _dataBaseConnect();
       final int response = await dataBase.insert(tableName, data);
-
-      if (response != 1) {
-        return DataResult.failure(GeneralTextException(
-            textCode: "Erro to insert Data in $tableName."));
-      }
 
       return DataResult.success(response);
     } catch (e) {
@@ -83,11 +74,6 @@ class SqliteDataServices extends DataServices {
     try {
       final dataBase = await _dataBaseConnect();
       final int response = await dataBase.update(tableName, data, where: where);
-
-      if (response == 0) {
-        return DataResult.failure(GeneralTextException(
-            textCode: "Error to update Data in $tableName"));
-      }
 
       return DataResult.success(response);
     } catch (e) {

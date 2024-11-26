@@ -10,7 +10,6 @@ import 'package:syscost/common/widgets/custom_error_dialog.dart';
 import 'package:syscost/features/login/login_controller.dart';
 import 'package:syscost/features/login/login_state.dart';
 import 'package:syscost/locator.dart';
-import 'package:window_manager/window_manager.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
