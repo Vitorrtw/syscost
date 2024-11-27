@@ -5,7 +5,7 @@ class UserStateInitial extends UserState {}
 class UserStateLoading extends UserState {}
 
 class UserStateSuccess extends UserState {
-  String? message;
+  final String? message;
 
   UserStateSuccess([this.message]);
 }

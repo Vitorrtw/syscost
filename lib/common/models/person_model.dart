@@ -4,9 +4,9 @@ import 'dart:convert';
 class PersonModel {
   final int? id;
   final String? name;
-  final bool? status;
+  final int? status;
   final String? tell;
-  final String? adress;
+  final String? address;
   final String? number;
   final String? district;
   final String? city;
@@ -18,7 +18,7 @@ class PersonModel {
     required this.name,
     required this.status,
     required this.tell,
-    required this.adress,
+    required this.address,
     required this.number,
     required this.district,
     required this.city,
@@ -32,7 +32,7 @@ class PersonModel {
       'name': name,
       'status': status,
       'tell': tell,
-      'adress': adress,
+      'address': address,
       'number': number,
       'district': district,
       'city': city,
@@ -45,9 +45,9 @@ class PersonModel {
     return PersonModel(
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
-      status: map['status'] != null ? map['status'] as bool : null,
+      status: map['status'] != null ? map['status'] as int : null,
       tell: map['tell'] != null ? map['tell'] as String : null,
-      adress: map['adress'] != null ? map['adress'] as String : null,
+      address: map['address'] != null ? map['address'] as String : null,
       number: map['number'] != null ? map['number'] as String : null,
       district: map['district'] != null ? map['district'] as String : null,
       city: map['city'] != null ? map['city'] as String : null,

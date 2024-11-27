@@ -37,6 +37,14 @@ class _PartialUserModalState extends State<PartialUserModal> {
     _setUserData();
   }
 
+  @override
+  void dispose() {
+    _userLoginController.dispose();
+    _userPasswordController.dispose();
+    _userNameController.dispose();
+    super.dispose();
+  }
+
   void _setUserData() {
     if (widget.user != null) {
       _userLoginController.text = widget.user!.login!;

@@ -51,8 +51,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _onLogin() async {
     if (_loginFormKey.currentState!.validate()) {
       await _pageController.doLogin(
-        userName: _userNameController.text,
-        userPassword: _userPasswordController.text,
+        userName: _userNameController.text.trim(),
+        userPassword: _userPasswordController.text.trim(),
       );
     }
   }

@@ -14,22 +14,6 @@ class UserController extends ChangeNotifier {
 
   UserState get state => _state;
 
-  void _changeState(UserState newState) {
-    _state = newState;
-    notifyListeners();
-  }
-
-  UserModel _createUserModel(
-    Map<String, dynamic> userData,
-  ) {
-    return UserModel(
-        id: userData["ID"],
-        login: userData["LOGIN"],
-        name: userData["NAME"],
-        password: userData["PASSWORD"],
-        status: userData["STATUS"]);
-  }
-
   Future<List?> getUsers() async {
     final userData = await _dataServices.queryData(tableName: "SYS_USERS");
 
@@ -113,5 +97,21 @@ class UserController extends ChangeNotifier {
         UserStateSuccess("Usuario Cadastrado com Sucesso!"),
       ),
     );
+  }
+
+  void _changeState(UserState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+
+  UserModel _createUserModel(
+    Map<String, dynamic> userData,
+  ) {
+    return UserModel(
+        id: userData["ID"],
+        login: userData["LOGIN"],
+        name: userData["NAME"],
+        password: userData["PASSWORD"],
+        status: userData["STATUS"]);
   }
 }

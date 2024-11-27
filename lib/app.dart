@@ -3,6 +3,7 @@ import 'package:syscost/common/constants/routes.dart';
 import 'package:syscost/common/themes/default_theme.dart';
 import 'package:syscost/features/home/home_page.dart';
 import 'package:syscost/features/login/login_page.dart';
+import 'package:syscost/features/person/person_page.dart';
 import 'package:syscost/features/user/user_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
       routes: {
         NamedRoute.loginPage: (context) => const LoginPage(),
         NamedRoute.homePage: (context) => const HomePage(),
-        NamedRoute.userPage: (context) => const UserPage()
+        NamedRoute.userPage: (context) => const UserPage(),
+        NamedRoute.personPage: (context) => const PersonPage()
       },
     );
   }

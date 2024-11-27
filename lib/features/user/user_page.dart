@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/user_model.dart';
+import 'package:syscost/common/widgets/custom_circular_progress_indicator.dart';
 import 'package:syscost/common/widgets/custom_error_dialog.dart';
 import 'package:syscost/common/widgets/custom_success_dialog.dart';
 import 'package:syscost/common/widgets/drawer_menu.dart';
@@ -30,19 +31,28 @@ class _UserPageState extends State<UserPage> {
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(_handleLoginStateChange);
+    _pageController.addListener(_handleUserStateChange);
     _getUsers();
   }
 
-  void _handleLoginStateChange() {
+  void _handleUserStateChange() {
     switch (_pageController.state.runtimeType) {
       case UserStateSuccess:
+        Navigator.pop(context);
         showCustomSuccessDialog(
             context, (_pageController.state as UserStateSuccess).message!);
+        break;
+      case UserStateLoading:
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const CustomCircularProgressIndicator(),
+        );
         break;
       case UserStateError:
         showCustomErrorDialog(
             context, (_pageController.state as UserStateError).error);
+        break;
     }
   }
 
@@ -79,7 +89,6 @@ class _UserPageState extends State<UserPage> {
       drawer: const DrawerMenu(),
       body: Row(
         children: [
-          // Menu lateral
           Container(
             width: MediaQuery.of(context).size.width * 0.2,
             decoration: const BoxDecoration(
@@ -122,7 +131,6 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
           ),
-          // Área principal com scroll
           Expanded(
             child: Align(
               alignment: Alignment.topCenter,

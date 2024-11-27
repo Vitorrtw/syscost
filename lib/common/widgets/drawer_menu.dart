@@ -62,7 +62,9 @@ class _DrawerMenuState extends State<DrawerMenu> {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text("Pessoas"),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushReplacementNamed(context, NamedRoute.personPage);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.more),
