@@ -8,8 +8,32 @@ class CutModal extends StatefulWidget {
 }
 
 class _CutModalState extends State<CutModal> {
+  final _cutFormKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return Placeholder();
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(21),
+      ),
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 300,
+            maxWidth: 800,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: Form(
+              key: _cutFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

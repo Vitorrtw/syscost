@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/person_model.dart';
+import 'package:syscost/common/utils/functions.dart';
+import 'package:syscost/common/utils/validators.dart';
 import 'package:syscost/features/person/person_controller.dart';
 
 class PersonModal extends StatefulWidget {
@@ -50,15 +53,15 @@ class _PersonModalState extends State<PersonModal> {
   PersonModel _getPersonDataFromForm() {
     return PersonModel(
       id: widget.person?.id,
-      name: _personNameController.text.trim(),
+      name: toTitleCase(_personNameController.text.trim()),
       status: widget.person == null ? 1 : widget.person?.status,
       tell: _personTellController.text.trim(),
-      address: _personAddressController.text.trim(),
+      address: toTitleCase(_personAddressController.text.trim()),
       number: _personNumberController.text.trim(),
-      district: _personDistrictController.text.trim(),
-      city: _personCityController.text.trim(),
+      district: toTitleCase(_personDistrictController.text.trim()),
+      city: toTitleCase(_personCityController.text.trim()),
       cep: _personCepController.text.trim(),
-      uf: _personUfController.text.trim(),
+      uf: _personUfController.text.trim().toUpperCase(),
     );
   }
 
@@ -145,7 +148,10 @@ class _PersonModalState extends State<PersonModal> {
                             const SizedBox(height: 10),
                             TextFormField(
                               controller: _personNameController,
+                              validator: Validators.validateGenericNotNull,
+                              maxLength: Validators.defaultTextNumCaracters,
                               decoration: const InputDecoration(
+                                counterText: "",
                                 prefixIcon: Icon(
                                   Icons.person,
                                   color: AppColors.primaryRed,
@@ -172,7 +178,10 @@ class _PersonModalState extends State<PersonModal> {
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _personAddressController,
+                              maxLength: Validators.defaultTextNumCaracters,
+                              validator: Validators.validateGenericNotNull,
                               decoration: const InputDecoration(
+                                counterText: "",
                                 prefixIcon: Icon(
                                   Icons.streetview,
                                   color: AppColors.primaryRed,
@@ -184,7 +193,13 @@ class _PersonModalState extends State<PersonModal> {
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _personNumberController,
+                              validator: Validators.validateGenericNotNull,
+                              maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
                               decoration: const InputDecoration(
+                                counterText: "",
                                 prefixIcon: Icon(
                                   Icons.numbers,
                                   color: AppColors.primaryRed,
@@ -200,6 +215,7 @@ class _PersonModalState extends State<PersonModal> {
                   ),
                   TextFormField(
                     controller: _personCepController,
+                    validator: Validators.validadePersonCep,
                     maxLength: 8,
                     decoration: const InputDecoration(
                       counterText: "",
@@ -213,7 +229,10 @@ class _PersonModalState extends State<PersonModal> {
                   ),
                   TextFormField(
                     controller: _personDistrictController,
+                    validator: Validators.validateGenericNotNull,
+                    maxLength: Validators.defaultTextNumCaracters,
                     decoration: const InputDecoration(
+                      counterText: "",
                       prefixIcon: Icon(
                         Icons.location_pin,
                         color: AppColors.primaryRed,
@@ -224,6 +243,7 @@ class _PersonModalState extends State<PersonModal> {
                   ),
                   TextFormField(
                     controller: _personCityController,
+                    validator: Validators.validateGenericNotNull,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(
                         Icons.location_city,
@@ -236,6 +256,7 @@ class _PersonModalState extends State<PersonModal> {
                   TextFormField(
                     controller: _personUfController,
                     maxLength: 2,
+                    validator: Validators.validatePersonUf,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(
                         Icons.map,

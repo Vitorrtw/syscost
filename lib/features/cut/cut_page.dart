@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
+import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/widgets/drawer_menu.dart';
 
 class CutPage extends StatefulWidget {
@@ -11,6 +12,8 @@ class CutPage extends StatefulWidget {
 }
 
 class _CutPageState extends State<CutPage> {
+  final List<CutItensModel> itensList = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

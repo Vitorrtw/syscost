@@ -165,6 +165,7 @@ class _PersonTableState extends State<PersonTable> {
                               child: Text(
                                 person.name,
                                 style: AppTextStyles.defaultText,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
