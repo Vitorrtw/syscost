@@ -69,7 +69,9 @@ class _DrawerMenuState extends State<DrawerMenu> {
           ListTile(
             leading: const Icon(Icons.more),
             title: const Text("Corte"),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushReplacementNamed(context, NamedRoute.cutPage);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.yard_rounded),

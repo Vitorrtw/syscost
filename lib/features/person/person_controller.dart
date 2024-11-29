@@ -72,6 +72,20 @@ class PersonController extends ChangeNotifier {
     );
   }
 
+  Future<void> alterPersonData({
+    required PersonModel person,
+  }) async {
+    _changeState(PersonStateLoading());
+    final DataResult response = await _dataServices.updateData(
+        tableName: tableName, data: person.toMap(), where: "ID = ${person.id}");
+
+    response.fold(
+      (error) => _changeState(PersonStateError(error.message)),
+      (data) =>
+          _changeState(PersonStateSuccess("Cadastro alterado com secesso!")),
+    );
+  }
+
   void _changeState(PersonState newState) {
     _state = newState;
     notifyListeners();

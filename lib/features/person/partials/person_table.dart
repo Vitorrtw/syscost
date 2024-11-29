@@ -64,10 +64,11 @@ class _PersonTableState extends State<PersonTable> {
     required PersonModel person,
   }) async {
     final userChoose = await CustomChooseDialog(
-        context: context,
-        message: "Deseja realmente excluir a pessoa ${person.name} ?",
-        progressButton: "Sim",
-        cancelMessage: "Cancelar");
+      context: context,
+      message: "Deseja realmente excluir a pessoa ${person.name} ?",
+      progressButton: "Sim",
+      cancelMessage: "Cancelar",
+    );
 
     if (userChoose == 1) {
       await widget.controller.deletePerson(person: person).then(

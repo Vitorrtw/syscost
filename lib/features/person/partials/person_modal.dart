@@ -54,7 +54,7 @@ class _PersonModalState extends State<PersonModal> {
       status: widget.person == null ? 1 : widget.person?.status,
       tell: _personTellController.text.trim(),
       address: _personAddressController.text.trim(),
-      number: _personNameController.text.trim(),
+      number: _personNumberController.text.trim(),
       district: _personDistrictController.text.trim(),
       city: _personCityController.text.trim(),
       cep: _personCepController.text.trim(),
@@ -77,6 +77,12 @@ class _PersonModalState extends State<PersonModal> {
   Future<void> _alterPerson() async {
     if (_formPersonKey.currentState!.validate()) {
       final PersonModel person = _getPersonDataFromForm();
+
+      await widget.personController.alterPersonData(person: person).then(
+        (_) {
+          widget.onPersonAction();
+        },
+      );
     }
   }
 
@@ -250,7 +256,9 @@ class _PersonModalState extends State<PersonModal> {
                       onPressed: () {
                         if (widget.person == null) {
                           _createPerson();
-                        } else {}
+                        } else {
+                          _alterPerson();
+                        }
                       },
                       child: Text(
                         widget.person == null ? "Cadastrar" : "Alterar",

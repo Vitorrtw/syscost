@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:syscost/features/cut/cut_controller.dart';
 import 'package:syscost/features/login/login_controller.dart';
 import 'package:syscost/features/person/person_controller.dart';
 import 'package:syscost/features/user/user_controller.dart';
@@ -23,5 +24,9 @@ void setup() {
 
   locator.registerFactory(
     () => PersonController(dataService: locator.get<DataServices>()),
+  );
+
+  locator.registerFactory(
+    () => CutController(dataService: locator.get<DataServices>()),
   );
 }
