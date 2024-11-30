@@ -2,11 +2,13 @@
 import 'dart:convert';
 
 class CutItensModel {
+  final int? cutId;
   final String? color;
   final String? size;
   final int? quantity;
 
   CutItensModel({
+    required this.cutId,
     required this.color,
     required this.size,
     required this.quantity,
@@ -14,6 +16,7 @@ class CutItensModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'cutId': cutId,
       'color': color,
       'size': size,
       'quantity': quantity,
@@ -22,6 +25,7 @@ class CutItensModel {
 
   factory CutItensModel.fromMap(Map<String, dynamic> map) {
     return CutItensModel(
+      cutId: map['cutId'] != null ? map['cutId'] as int : null,
       color: map['color'] != null ? map['color'] as String : null,
       size: map['size'] != null ? map['size'] as String : null,
       quantity: map['quantity'] != null ? map['quantity'] as int : null,

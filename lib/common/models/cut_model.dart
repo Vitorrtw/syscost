@@ -7,10 +7,10 @@ class CutModel {
   final int? id;
   final String? name;
   final int? status;
-  final DateTime? completion;
+  final String? completion;
   final int? userCreate;
   final int? userFinished;
-  final List<CutItensModel> itens;
+  List<CutItensModel>? itens;
 
   CutModel({
     required this.id,
@@ -27,10 +27,10 @@ class CutModel {
       'id': id,
       'name': name,
       'status': status,
-      'completion': completion?.millisecondsSinceEpoch,
+      'completion': completion,
       'userCreate': userCreate,
       'userFinished': userFinished,
-      'itens': itens.map((x) => x.toMap()).toList(),
+      'itens': itens?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -39,17 +39,18 @@ class CutModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
       status: map['status'] != null ? map['status'] as int : null,
-      completion: map['completion'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['completion'] as int)
-          : null,
+      completion:
+          map['completion'] != null ? map['completion'] as String : null,
       userCreate: map['userCreate'] != null ? map['userCreate'] as int : null,
       userFinished:
           map['userFinished'] != null ? map['userFinished'] as int : null,
-      itens: List<CutItensModel>.from(
-        (map['itens'] as List<int>).map<CutItensModel>(
-          (x) => CutItensModel.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      itens: map['itens'] != null
+          ? List<CutItensModel>.from(
+              (map['itens'] as List<int>).map<CutItensModel?>(
+                (x) => CutItensModel.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
     );
   }
 

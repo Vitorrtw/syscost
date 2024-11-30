@@ -3,6 +3,9 @@ import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/widgets/drawer_menu.dart';
+import 'package:syscost/features/cut/cut_controller.dart';
+import 'package:syscost/features/cut/partials/cut_table.dart';
+import 'package:syscost/locator.dart';
 
 class CutPage extends StatefulWidget {
   const CutPage({super.key});
@@ -12,7 +15,27 @@ class CutPage extends StatefulWidget {
 }
 
 class _CutPageState extends State<CutPage> {
+  // Local values
   final List<CutItensModel> itensList = [];
+  List? cutList;
+  bool isLoading = true;
+
+  // Controller Page
+  final _pageController = locator.get<CutController>();
+
+  Future<void> _getCuts() async {
+    final custDataLits = await _pageController.getCuts();
+    setState(() {
+      cutList = custDataLits;
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    _getCuts();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +106,12 @@ class _CutPageState extends State<CutPage> {
                         style: AppTextStyles.titleText,
                       ),
                     ),
+                    CutTable(
+                      controller: _pageController,
+                      onCutAction: _getCuts,
+                      cutList: cutList,
+                      isLoading: isLoading,
+                    )
                   ],
                 ),
               ),
