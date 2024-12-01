@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
-import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/widgets/drawer_menu.dart';
 import 'package:syscost/features/cut/cut_controller.dart';
+import 'package:syscost/features/cut/partials/cut_modal.dart';
 import 'package:syscost/features/cut/partials/cut_table.dart';
 import 'package:syscost/locator.dart';
 
@@ -16,12 +16,23 @@ class CutPage extends StatefulWidget {
 
 class _CutPageState extends State<CutPage> {
   // Local values
-  final List<CutItensModel> itensList = [];
   List? cutList;
   bool isLoading = true;
 
   // Controller Page
   final _pageController = locator.get<CutController>();
+
+  @override
+  void initState() {
+    _getCuts();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<void> _getCuts() async {
     final custDataLits = await _pageController.getCuts();
@@ -31,10 +42,14 @@ class _CutPageState extends State<CutPage> {
     });
   }
 
-  @override
-  void initState() {
-    _getCuts();
-    super.initState();
+  void _showCutModal() {
+    showDialog(
+      context: context,
+      builder: (context) => CutModal(
+        controller: _pageController,
+        onCutAction: _getCuts,
+      ),
+    );
   }
 
   @override
@@ -78,7 +93,7 @@ class _CutPageState extends State<CutPage> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryRed),
-                            onPressed: () {},
+                            onPressed: _showCutModal,
                             child: Text(
                               "Cadastrar",
                               style: AppTextStyles.buttonText
