@@ -23,14 +23,27 @@ class CutModal extends StatefulWidget {
 
 class _CutModalState extends State<CutModal> {
   final _cutFormKey = GlobalKey<FormState>();
+  static const List<DropdownMenuItem<int>> sizeList = [
+    DropdownMenuItem<int>(value: 1, child: Text("PP")),
+    DropdownMenuItem<int>(value: 2, child: Text("P")),
+    DropdownMenuItem<int>(value: 3, child: Text("M")),
+    DropdownMenuItem<int>(value: 4, child: Text("G")),
+  ];
+  final List<Map<String, TextEditingController>> controllers = [];
 
-  List<Map<String, String>> cutItens = [];
-
-  final _cutNameController = TextEditingController();
-
-  void _addCutIten() {
+  void _addCutItem() {
     setState(() {
-      cutItens.add({"color": "", "size": "", "quantity": ""});
+      controllers.add({
+        "color": TextEditingController(),
+        "size": TextEditingController(),
+        "quantity": TextEditingController(),
+      });
+    });
+  }
+
+  void _removeCutItem(int index) {
+    setState(() {
+      controllers.removeAt(index);
     });
   }
 
@@ -70,9 +83,9 @@ class _CutModalState extends State<CutModal> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: _addCutIten,
-                                icon: Icon(Icons.add),
-                                label: Text("Adicionar"),
+                                onPressed: _addCutItem,
+                                icon: const Icon(Icons.add),
+                                label: const Text("Adicionar"),
                               ),
                             )
                           ],
@@ -94,7 +107,7 @@ class _CutModalState extends State<CutModal> {
                               height: 10,
                             ),
                             TextFormField(
-                              controller: _cutNameController,
+                              controller: TextEditingController(),
                               validator: Validators.validateGenericNotNull,
                               maxLength: 65,
                               decoration: const InputDecoration(
@@ -118,21 +131,44 @@ class _CutModalState extends State<CutModal> {
                       )
                     ],
                   ),
-                  ...cutItens.map((itens) {
-                    final sizeController = TextEditingController(
-                      text: itens["size"],
-                    );
-                    final colorController = TextEditingController(
-                      text: itens["color"],
-                    );
-                    final quantityController =
-                        TextEditingController(text: itens["quantity"]);
+                  ...controllers.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final controllerMap = entry.value;
 
                     return Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: colorController,
+                            controller: controllerMap["color"],
+                            decoration: const InputDecoration(
+                              labelText: "Cor",
+                              hintText: "Digite a cor",
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 12),
+                              border: UnderlineInputBorder(),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<int>(
+                                items: sizeList,
+                                value: int.tryParse(
+                                    controllerMap["size"]?.text ?? ""),
+                                onChanged: (value) {
+                                  setState(() {
+                                    controllerMap["size"]?.text =
+                                        value.toString();
+                                  });
+                                },
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -140,12 +176,24 @@ class _CutModalState extends State<CutModal> {
                         ),
                         Expanded(
                           child: TextField(
-                            controller: sizeController,
+                            controller: controllerMap["quantity"],
+                            decoration: const InputDecoration(
+                              labelText: "Quantidade",
+                              hintText: "Digite a quantidade",
+                            ),
+                            keyboardType: TextInputType.number,
                           ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _removeCutItem(index),
                         ),
                       ],
                     );
-                  })
+                  }),
                 ],
               ),
             ),
