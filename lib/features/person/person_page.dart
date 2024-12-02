@@ -113,7 +113,8 @@ class _PersonPageState extends State<PersonPage> {
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryRed),
+                              backgroundColor: AppColors.primaryRed,
+                            ),
                             onPressed: () {
                               _showPersonModal();
                             },
@@ -140,7 +141,7 @@ class _PersonPageState extends State<PersonPage> {
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Text(
-                        "Pessoas Cadastradas",
+                        "Pessoas cadastradas",
                         style: AppTextStyles.titleText,
                       ),
                     ),

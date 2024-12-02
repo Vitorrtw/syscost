@@ -45,6 +45,7 @@ class _CutPageState extends State<CutPage> {
   void _showCutModal() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => CutModal(
         controller: _pageController,
         onCutAction: _getCuts,
