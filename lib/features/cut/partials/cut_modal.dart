@@ -25,6 +25,7 @@ class CutModal extends StatefulWidget {
 class _CutModalState extends State<CutModal> {
   final _cutFormKey = GlobalKey<FormState>();
   final List<Map<String, dynamic>> _rows = [];
+  bool _generateTitle = false;
 
   void _addRow() {
     setState(() {
@@ -146,9 +147,30 @@ class _CutModalState extends State<CutModal> {
                             const SizedBox(
                               height: 30,
                             ),
-                            const Text(
-                              "Lista de Itens:",
-                              style: AppTextStyles.titleTab,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Expanded(
+                                  flex: 5,
+                                  child: Text(
+                                    "Lista de Itens:",
+                                    style: AppTextStyles.titleTab,
+                                  ),
+                                ),
+                                Checkbox(
+                                  value: _generateTitle,
+                                  activeColor: AppColors.primaryRed,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _generateTitle = value!;
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  "Gerar Titulo?",
+                                  style: AppTextStyles.defaultText,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -308,6 +330,7 @@ class _CutModalState extends State<CutModal> {
                               verticalAlignment:
                                   TableCellVerticalAlignment.middle,
                               child: TextFormField(
+                                validator: Validators.validateGenericNotNull,
                                 textAlign: TextAlign.center,
                                 decoration:
                                     const InputDecoration(hintText: "Cor"),
@@ -356,6 +379,35 @@ class _CutModalState extends State<CutModal> {
                       })
                     ],
                   ),
+                  Visibility(
+                    visible: _generateTitle,
+                    child: const SizedBox(
+                      height: 20,
+                    ),
+                  ),
+                  Visibility(
+                      visible: _generateTitle,
+                      child: const Text(
+                        "Dados do titulo",
+                        style: AppTextStyles.titleTab,
+                      )),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryRed,
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        "Gerar corte",
+                        style: AppTextStyles.buttonText
+                            .copyWith(color: AppColors.primaryWhite),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
