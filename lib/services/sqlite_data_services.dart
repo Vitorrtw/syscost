@@ -84,13 +84,16 @@ class SqliteDataServices extends DataServices {
   }
 
   @override
-  Future<DataResult> getWhere(
-      {required String tableName, required String where}) async {
+  Future<DataResult> getWhere({
+    required String tableName,
+    required String where,
+    int limit = 50,
+  }) async {
     try {
       final dataBase = await _dataBaseConnect();
 
       final List<Map<String, Object?>> response =
-          await dataBase.query(tableName, where: where);
+          await dataBase.query(tableName, where: where, limit: 50);
       if (response.isEmpty) {
         return DataResult.failure(
             const GeneralTextException(textCode: "No data to return"));

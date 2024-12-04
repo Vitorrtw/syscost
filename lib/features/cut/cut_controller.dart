@@ -7,8 +7,8 @@ import 'package:syscost/services/data_services.dart';
 
 class CutController extends ChangeNotifier {
   final DataServices _dataServices;
-  static const String CutTable = "SYS_CUTS";
-  static const String CutItensTable = "SYS_CUST_ITENS";
+  static const String cutTable = "SYS_CUTS";
+  static const String cutItensTable = "SYS_CUST_ITENS";
 
   CutController({
     required DataServices dataService,
@@ -25,7 +25,7 @@ class CutController extends ChangeNotifier {
 
   Future<List?> getCuts() async {
     _changeState(CutStateLoading());
-    final cutDataList = await _dataServices.queryData(tableName: CutTable);
+    final cutDataList = await _dataServices.queryData(tableName: cutTable);
 
     return cutDataList.fold(
       (error) {
@@ -43,7 +43,7 @@ class CutController extends ChangeNotifier {
     required int cutId,
   }) async {
     final DataResult response = await _dataServices.getWhere(
-        tableName: CutItensTable, where: "CUTID = $cutId");
+        tableName: cutItensTable, where: "CUTID = $cutId");
 
     return response.fold(
       (error) {

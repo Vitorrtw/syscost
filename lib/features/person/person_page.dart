@@ -52,6 +52,8 @@ class _PersonPageState extends State<PersonPage> {
         showCustomSuccessDialog(
             context, (_pageController.state as PersonStateSuccess).message!);
         break;
+      case PersonStateStatic:
+        break;
     }
   }
 

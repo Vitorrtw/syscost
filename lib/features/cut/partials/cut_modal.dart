@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/cut_model.dart';
+import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/utils/validators.dart';
+import 'package:syscost/common/widgets/custom_search_person.dart';
 import 'package:syscost/features/cut/cut_controller.dart';
 
 class CutModal extends StatefulWidget {
@@ -26,6 +28,7 @@ class _CutModalState extends State<CutModal> {
   final _cutFormKey = GlobalKey<FormState>();
   final List<Map<String, dynamic>> _rows = [];
   bool _generateTitle = false;
+  PersonModel? _personTitle;
 
   void _addRow() {
     setState(() {
@@ -56,6 +59,12 @@ class _CutModalState extends State<CutModal> {
     final sizes = _rows[index]["sizes"] as Map<String, int>;
     setState(() {
       _rows[index]["total"] = sizes.values.reduce((a, b) => a + b);
+    });
+  }
+
+  void _handlePersonSelected(PersonModel person) {
+    setState(() {
+      _personTitle = person;
     });
   }
 
@@ -379,21 +388,73 @@ class _CutModalState extends State<CutModal> {
                       })
                     ],
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Visibility(
                     visible: _generateTitle,
-                    child: const SizedBox(
-                      height: 20,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "Dados do titulo",
+                          style: AppTextStyles.titleTab,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => CustomSearchPerson(
+                                    onPersonSelected: _handlePersonSelected,
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "Buscar",
+                                style: AppTextStyles.buttonText,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              "Pessoa: ",
+                              style: AppTextStyles.titleTab,
+                            ),
+                            Text(
+                              _personTitle == null
+                                  ? "Selecione uma Pessoa"
+                                  : _personTitle!.name!,
+                              style: AppTextStyles.defaultText,
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            const Expanded(
+                              flex: 3,
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  labelText: "Valor",
+                                  hintText: "Digite o valor do titulo",
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  Visibility(
-                      visible: _generateTitle,
-                      child: const Text(
-                        "Dados do titulo",
-                        style: AppTextStyles.titleTab,
-                      )),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
+                  //// Button create
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(

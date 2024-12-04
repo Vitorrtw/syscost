@@ -28,6 +28,37 @@ class PersonController extends ChangeNotifier {
     return personList;
   }
 
+  Future<List?> getActivePersons() async {
+    try {
+      final personDataList = await _dataServices.getWhere(
+          tableName: tableName, where: "STATUS = 1");
+
+      if (personDataList.error != null) {
+        throw Exception(personDataList.error?.message);
+      }
+      List personList = personDataList.data.map(_createPersonModel).toList();
+      return personList;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<List?> getPersonsByName({required String userName}) async {
+    try {
+      final personDataList = await _dataServices.getWhere(
+          tableName: tableName, where: "NAME LIKE '%$userName%' ");
+
+      if (personDataList.error != null) {
+        throw Exception(personDataList.error?.message);
+      }
+
+      List personsList = personDataList.data.map(_createPersonModel).toList();
+      return personsList;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<void> alterPersonStatus({required PersonModel person}) async {
     _changeState(PersonStateLoading());
     final int status = person.status == 0 ? 1 : 0;

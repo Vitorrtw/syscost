@@ -10,6 +10,8 @@ class PersonStateSuccess extends PersonState {
   PersonStateSuccess([this.message]);
 }
 
+class PersonStateStatic extends PersonState {}
+
 class PersonStateError extends PersonState {
   final String error;
 
