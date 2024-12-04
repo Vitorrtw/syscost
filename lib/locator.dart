@@ -27,6 +27,8 @@ void setup() {
   );
 
   locator.registerFactory(
-    () => CutController(dataService: locator.get<DataServices>()),
+    () => CutController(
+        dataService: locator.get<DataServices>(),
+        securedStorage: const SecuredStorage()),
   );
 }

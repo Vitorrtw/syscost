@@ -145,7 +145,7 @@ class _CutTableState extends State<CutTable> {
                             child: Padding(
                               padding: const EdgeInsets.all(8),
                               child: Text(
-                                cut.completion,
+                                cut.completion ?? "Aberto",
                                 style: AppTextStyles.defaultText,
                                 textAlign: TextAlign.center,
                               ),

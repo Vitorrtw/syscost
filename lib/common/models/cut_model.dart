@@ -1,16 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:syscost/common/models/cut_itens_model.dart';
-
 class CutModel {
-  final int? id;
+  int? id;
   final String? name;
   final int? status;
   final String? completion;
   final int? userCreate;
   final int? userFinished;
-  List<CutItensModel>? itens;
 
   CutModel({
     required this.id,
@@ -19,7 +16,6 @@ class CutModel {
     required this.completion,
     required this.userCreate,
     required this.userFinished,
-    required this.itens,
   });
 
   Map<String, dynamic> toMap() {
@@ -30,7 +26,6 @@ class CutModel {
       'completion': completion,
       'userCreate': userCreate,
       'userFinished': userFinished,
-      'itens': itens?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -44,13 +39,6 @@ class CutModel {
       userCreate: map['userCreate'] != null ? map['userCreate'] as int : null,
       userFinished:
           map['userFinished'] != null ? map['userFinished'] as int : null,
-      itens: map['itens'] != null
-          ? List<CutItensModel>.from(
-              (map['itens'] as List<int>).map<CutItensModel?>(
-                (x) => CutItensModel.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
     );
   }
 

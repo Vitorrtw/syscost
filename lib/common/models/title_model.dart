@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:syscost/common/models/person_model.dart';
+import 'package:syscost/common/models/user_model.dart';
 
 enum TitleStatus {
   active("Ativo", 1),
@@ -23,24 +24,24 @@ class TitleModel {
   final double? discount;
   final double? fees;
   final double? value;
-  final PersonModel? userCreate;
+  final UserModel? userCreate;
   final PersonModel? userAcquittance;
   final String? dateCreated;
   final String? dateAcquittance;
 
   TitleModel({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.person,
-    required this.status,
-    required this.discount,
-    required this.fees,
-    required this.value,
-    required this.userCreate,
-    required this.userAcquittance,
-    required this.dateCreated,
-    required this.dateAcquittance,
+    this.id,
+    this.name,
+    this.description,
+    this.person,
+    this.status,
+    this.discount,
+    this.fees,
+    this.value,
+    this.userCreate,
+    this.userAcquittance,
+    this.dateCreated,
+    this.dateAcquittance,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,7 +75,7 @@ class TitleModel {
       fees: map['fees'] != null ? map['fees'] as double : null,
       value: map['value'] != null ? map['value'] as double : null,
       userCreate: map['userCreate'] != null
-          ? PersonModel.fromMap(map['userCreate'] as Map<String, dynamic>)
+          ? UserModel.fromMap(map['userCreate'] as Map<String, dynamic>)
           : null,
       userAcquittance: map['userAcquittance'] != null
           ? PersonModel.fromMap(map['userAcquittance'] as Map<String, dynamic>)

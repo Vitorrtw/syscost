@@ -1,8 +1,14 @@
+// ignore_for_file: type_literal_in_constant_pattern
+
 import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
+import 'package:syscost/common/widgets/custom_circular_progress_indicator.dart';
+import 'package:syscost/common/widgets/custom_error_dialog.dart';
+import 'package:syscost/common/widgets/custom_success_dialog.dart';
 import 'package:syscost/common/widgets/drawer_menu.dart';
 import 'package:syscost/features/cut/cut_controller.dart';
+import 'package:syscost/features/cut/cut_state.dart';
 import 'package:syscost/features/cut/partials/cut_modal.dart';
 import 'package:syscost/features/cut/partials/cut_table.dart';
 import 'package:syscost/locator.dart';
@@ -24,6 +30,7 @@ class _CutPageState extends State<CutPage> {
 
   @override
   void initState() {
+    _pageController.addListener(_handlePersonStateChange);
     _getCuts();
     super.initState();
   }
@@ -51,6 +58,26 @@ class _CutPageState extends State<CutPage> {
         onCutAction: _getCuts,
       ),
     );
+  }
+
+  void _handlePersonStateChange() {
+    switch (_pageController.state.runtimeType) {
+      case CutStateLoading:
+        showDialog(
+          context: context,
+          builder: (context) => const CustomCircularProgressIndicator(),
+        );
+        break;
+      case CutStateError:
+        showCustomErrorDialog(
+            context, (_pageController.state as CutStateError).error);
+        break;
+      case CutStateSuccess:
+        Navigator.pop(context);
+        showCustomSuccessDialog(
+            context, (_pageController.state as CutStateSuccess).message!);
+        break;
+    }
   }
 
   @override

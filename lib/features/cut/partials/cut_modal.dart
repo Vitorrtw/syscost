@@ -4,7 +4,9 @@ import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
+import 'package:syscost/common/utils/functions.dart';
 import 'package:syscost/common/utils/validators.dart';
+import 'package:syscost/common/widgets/custom_error_dialog.dart';
 import 'package:syscost/common/widgets/custom_search_person.dart';
 import 'package:syscost/features/cut/cut_controller.dart';
 
@@ -29,6 +31,11 @@ class _CutModalState extends State<CutModal> {
   final List<Map<String, dynamic>> _rows = [];
   bool _generateTitle = false;
   PersonModel? _personTitle;
+
+  // Text Controllers
+  final _personTitleController = TextEditingController();
+  final _cutNameController = TextEditingController();
+  final _titleValueController = TextEditingController();
 
   void _addRow() {
     setState(() {
@@ -65,7 +72,33 @@ class _CutModalState extends State<CutModal> {
   void _handlePersonSelected(PersonModel person) {
     setState(() {
       _personTitle = person;
+      _personTitleController.text = person.name!;
     });
+  }
+
+  Future<void> _createCut() async {
+    // Cut Validators
+    if (_cutFormKey.currentState!.validate()) {
+      if (_generateTitle && _personTitle == null) {
+        showCustomErrorDialog(
+            context, "Nenhuma pessoa selecionada para geração do titulo!");
+        return;
+      }
+
+      if (_titleValueController.text.isEmpty && _generateTitle) {
+        showCustomErrorDialog(
+            context, "Favor selecione uma valor para o titulo");
+        return;
+      }
+
+      await widget.controller.createCut(
+        cutItensData: _rows,
+        cutName: _cutNameController.text,
+        generateTitle: _generateTitle,
+        person: _personTitle,
+        titleValue: double.parse(_titleValueController.text),
+      );
+    }
   }
 
   @override
@@ -141,7 +174,7 @@ class _CutModalState extends State<CutModal> {
                               height: 10,
                             ),
                             TextFormField(
-                              controller: TextEditingController(),
+                              controller: _cutNameController,
                               validator: Validators.validateGenericNotNull,
                               maxLength: 65,
                               decoration: const InputDecoration(
@@ -344,7 +377,7 @@ class _CutModalState extends State<CutModal> {
                                 decoration:
                                     const InputDecoration(hintText: "Cor"),
                                 onChanged: (value) {
-                                  row["color"] = value;
+                                  row["color"] = toTitleCase(value);
                                 },
                               ),
                             ),
@@ -424,23 +457,44 @@ class _CutModalState extends State<CutModal> {
                             const SizedBox(
                               width: 20,
                             ),
-                            Text(
-                              "Pessoa: ",
-                              style: AppTextStyles.titleTab,
-                            ),
-                            Text(
-                              _personTitle == null
-                                  ? "Selecione uma Pessoa"
-                                  : _personTitle!.name!,
-                              style: AppTextStyles.defaultText,
+                            Expanded(
+                              flex: 5,
+                              child: TextField(
+                                controller: _personTitleController,
+                                enabled: false,
+                                decoration: const InputDecoration(
+                                  prefixText: "Pessoa:  ",
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(
                               width: 20,
                             ),
-                            const Expanded(
-                              flex: 3,
-                              child: TextField(
-                                decoration: InputDecoration(
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: _titleValueController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+[,|.]?\d{0,2}$')),
+                                  TextInputFormatter.withFunction(
+                                      (oldValue, newValue) {
+                                    final newText =
+                                        newValue.text.replaceAll('.', ',');
+                                    return newValue.copyWith(
+                                        text: newText,
+                                        selection: newValue.selection);
+                                  })
+                                ],
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(
+                                    Icons.attach_money,
+                                    color: AppColors.primaryGreen,
+                                  ),
+                                  prefixText: "R\$ ",
                                   labelText: "Valor",
                                   hintText: "Digite o valor do titulo",
                                 ),
@@ -451,7 +505,7 @@ class _CutModalState extends State<CutModal> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   //// Button create
@@ -461,7 +515,7 @@ class _CutModalState extends State<CutModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryRed,
                       ),
-                      onPressed: () {},
+                      onPressed: _createCut,
                       child: Text(
                         "Gerar corte",
                         style: AppTextStyles.buttonText
