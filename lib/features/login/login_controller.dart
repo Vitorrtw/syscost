@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syscost/common/constants/tables_names.dart';
 import 'package:syscost/common/data/data_result.dart';
 import 'package:syscost/common/models/user_model.dart';
 import 'package:syscost/features/login/login_state.dart';
@@ -45,7 +46,7 @@ class LoginController extends ChangeNotifier {
   }) async {
     _changeState(LoginStateLoading());
     final DataResult response = await _dataService.getWhere(
-        tableName: "SYS_USERS",
+        tableName: TablesNames.users,
         where:
             "LOGIN = '$userName' AND PASSWORD = '$userPassword' AND STATUS = 1");
 

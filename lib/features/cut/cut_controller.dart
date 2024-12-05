@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:syscost/common/constants/tables_names.dart';
 import 'package:syscost/common/data/data_result.dart';
 import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/models/title_model.dart';
 import 'package:syscost/common/models/user_model.dart';
+import 'package:syscost/common/utils/functions.dart';
 import 'package:syscost/features/cut/cut_state.dart';
 import 'package:syscost/services/data_services.dart';
 import 'package:syscost/services/secure_storage.dart';
@@ -12,8 +14,6 @@ import 'package:syscost/services/secure_storage.dart';
 class CutController extends ChangeNotifier {
   final DataServices _dataServices;
   final SecuredStorage _securedStorage;
-  static const String cutTable = "SYS_CUTS";
-  static const String cutItensTable = "SYS_CUTS_ITENS";
 
   CutController({
     required DataServices dataService,
@@ -37,6 +37,7 @@ class CutController extends ChangeNotifier {
     required PersonModel? person,
     required double? titleValue,
   }) async {
+    _changeState(CutStateLoading());
     final UserModel currentUser = await _getCurrentUser();
     final CutModel cutModel = CutModel(
       id: null,
@@ -48,7 +49,7 @@ class CutController extends ChangeNotifier {
     );
 
     final response = await _dataServices.insertData(
-        tableName: cutTable, data: cutModel.toMap());
+        tableName: TablesNames.cuts, data: cutModel.toMap());
 
     return response.fold(
       (error) {
@@ -57,17 +58,26 @@ class CutController extends ChangeNotifier {
       (data) async {
         cutModel.id = data;
         await _createCutItens(cutItens: cutItensData, cut: cutModel);
-        await _createCutTitle(
+        if (generateTitle) {
+          final TitleModel title = _createTitleModel(
             cut: cutModel,
             person: person!,
             titleValue: titleValue!,
-            usercreate: currentUser);
+            usercreate: currentUser,
+          );
+
+          /// Create Title
+          await _createCutTitle(title: title);
+        } else {
+          _changeState(CutStateSuccess("Corte Cadastrado com Sucesso!"));
+        }
       },
     );
   }
 
   Future<List?> getCuts() async {
-    final cutDataList = await _dataServices.queryData(tableName: cutTable);
+    final cutDataList =
+        await _dataServices.queryData(tableName: TablesNames.cuts);
 
     return cutDataList.fold(
       (error) {
@@ -81,19 +91,20 @@ class CutController extends ChangeNotifier {
     );
   }
 
-  Future<void> _createCutTitle(
-      {required CutModel cut,
-      required PersonModel person,
-      required double titleValue,
-      required UserModel usercreate}) async {
-    final TitleModel title = TitleModel(
-      name: "Titulo referente ao Corte: ${cut.id}",
-      description:
-          "Titulo Referente ao corte de numero: ${cut.id} - Nome: ${cut.name}",
-      status: TitleStatus.active.code,
-      person: person,
-      userCreate: usercreate,
+  Future<void> _createCutTitle({required TitleModel title}) async {
+    // Title Model
+
+    final response = await _dataServices.insertData(
+      tableName: TablesNames.titles,
+      data: title.toMap(),
     );
+
+    if (response.error != null) {
+      _changeState(CutStateError(response.error!.message));
+      return;
+    }
+
+    _changeState(CutStateSuccess("Corte Cadastrado com Sucesso!"));
   }
 
   Future<void> _createCutItens({
@@ -113,7 +124,7 @@ class CutController extends ChangeNotifier {
         );
 
         final response = await _dataServices.insertData(
-          tableName: cutItensTable,
+          tableName: TablesNames.cutItens,
           data: cutModel.toMap(),
         );
 
@@ -138,7 +149,7 @@ class CutController extends ChangeNotifier {
     required int cutId,
   }) async {
     final DataResult response = await _dataServices.getWhere(
-        tableName: cutItensTable, where: "CUTID = $cutId");
+        tableName: TablesNames.cutItens, where: "CUTID = $cutId");
 
     return response.fold(
       (error) {
@@ -149,6 +160,24 @@ class CutController extends ChangeNotifier {
         List<CutItensModel> cutItens = data.map(_createCutItensModel).toList();
         return cutItens;
       },
+    );
+  }
+
+  TitleModel _createTitleModel({
+    required CutModel cut,
+    required PersonModel person,
+    required double titleValue,
+    required UserModel usercreate,
+  }) {
+    return TitleModel(
+      name: "Titulo Corte: ${cut.id}",
+      description: "Titulo corte de numero: ${cut.id} - Nome: ${cut.name}",
+      status: TitleStatus.active.code,
+      person: person.id,
+      userCreate: usercreate.id,
+      dateCreated: getDateTimeNow(),
+      type: TitleType.obligation.code,
+      value: titleValue,
     );
   }
 

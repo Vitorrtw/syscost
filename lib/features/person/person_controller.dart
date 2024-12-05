@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syscost/common/constants/tables_names.dart';
 import 'package:syscost/common/data/data_result.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/features/person/person_state.dart';
@@ -6,7 +7,6 @@ import 'package:syscost/services/data_services.dart';
 
 class PersonController extends ChangeNotifier {
   final DataServices _dataServices;
-  static const String tableName = "SYS_PERSONS";
 
   PersonController({required DataServices dataService})
       : _dataServices = dataService;
@@ -31,7 +31,7 @@ class PersonController extends ChangeNotifier {
   Future<List?> getActivePersons() async {
     try {
       final personDataList = await _dataServices.getWhere(
-          tableName: tableName, where: "STATUS = 1");
+          tableName: TablesNames.persons, where: "STATUS = 1");
 
       if (personDataList.error != null) {
         throw Exception(personDataList.error?.message);
@@ -46,7 +46,7 @@ class PersonController extends ChangeNotifier {
   Future<List?> getPersonsByName({required String userName}) async {
     try {
       final personDataList = await _dataServices.getWhere(
-          tableName: tableName, where: "NAME LIKE '%$userName%' ");
+          tableName: TablesNames.persons, where: "NAME LIKE '%$userName%' ");
 
       if (personDataList.error != null) {
         throw Exception(personDataList.error?.message);
@@ -63,7 +63,7 @@ class PersonController extends ChangeNotifier {
     _changeState(PersonStateLoading());
     final int status = person.status == 0 ? 1 : 0;
     final DataResult response = await _dataServices.updateData(
-        tableName: "SYS_PERSONS",
+        tableName: TablesNames.persons,
         data: {"STATUS": status},
         where: "ID = ${person.id}");
 
@@ -78,7 +78,7 @@ class PersonController extends ChangeNotifier {
   Future<void> deletePerson({required PersonModel person}) async {
     _changeState(PersonStateLoading());
     final DataResult response = await _dataServices.deleteWhere(
-        tableName: tableName, where: "ID = ${person.id}");
+        tableName: TablesNames.persons, where: "ID = ${person.id}");
 
     response.fold(
       (error) => _changeState(PersonStateError(error.message)),
@@ -92,7 +92,7 @@ class PersonController extends ChangeNotifier {
   }) async {
     _changeState(PersonStateLoading());
     final DataResult response = await _dataServices.insertData(
-      tableName: tableName,
+      tableName: TablesNames.persons,
       data: person.toMap(),
     );
 
@@ -108,7 +108,9 @@ class PersonController extends ChangeNotifier {
   }) async {
     _changeState(PersonStateLoading());
     final DataResult response = await _dataServices.updateData(
-        tableName: tableName, data: person.toMap(), where: "ID = ${person.id}");
+        tableName: TablesNames.persons,
+        data: person.toMap(),
+        where: "ID = ${person.id}");
 
     response.fold(
       (error) => _changeState(PersonStateError(error.message)),

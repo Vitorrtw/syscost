@@ -15,31 +15,43 @@ enum TitleStatus {
   const TitleStatus(this.description, this.code);
 }
 
+enum TitleType {
+  ownership("R", 1),
+  obligation("O", 0);
+
+  final String description;
+  final int code;
+
+  const TitleType(this.description, this.code);
+}
+
 class TitleModel {
-  final String? id;
+  final int? id;
   final String? name;
   final String? description;
-  final PersonModel? person;
+  final int? person;
   final int? status;
+  final int? type;
   final double? discount;
   final double? fees;
   final double? value;
-  final UserModel? userCreate;
-  final PersonModel? userAcquittance;
+  final int? userCreate;
+  final int? userAcquittance;
   final String? dateCreated;
   final String? dateAcquittance;
 
   TitleModel({
+    this.person,
+    this.userCreate,
+    this.userAcquittance,
     this.id,
     this.name,
     this.description,
-    this.person,
     this.status,
+    this.type,
     this.discount,
     this.fees,
     this.value,
-    this.userCreate,
-    this.userAcquittance,
     this.dateCreated,
     this.dateAcquittance,
   });
@@ -49,13 +61,14 @@ class TitleModel {
       'id': id,
       'name': name,
       'description': description,
-      'person': person?.toMap(),
+      'person': person,
       'status': status,
+      'type': type,
       'discount': discount,
       'fees': fees,
       'value': value,
-      'userCreate': userCreate?.toMap(),
-      'userAcquittance': userAcquittance?.toMap(),
+      'userCreate': userCreate,
+      'userAcquittance': userAcquittance,
       'dateCreated': dateCreated,
       'dateAcquittance': dateAcquittance,
     };
@@ -63,23 +76,19 @@ class TitleModel {
 
   factory TitleModel.fromMap(Map<String, dynamic> map) {
     return TitleModel(
-      id: map['id'] != null ? map['id'] as String : null,
+      id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
       description:
           map['description'] != null ? map['description'] as String : null,
-      person: map['person'] != null
-          ? PersonModel.fromMap(map['person'] as Map<String, dynamic>)
-          : null,
+      person: map['person'] != null ? map['person'] as int : null,
       status: map['status'] != null ? map['status'] as int : null,
+      type: map['type'] != null ? map['type'] as int : null,
       discount: map['discount'] != null ? map['discount'] as double : null,
       fees: map['fees'] != null ? map['fees'] as double : null,
       value: map['value'] != null ? map['value'] as double : null,
-      userCreate: map['userCreate'] != null
-          ? UserModel.fromMap(map['userCreate'] as Map<String, dynamic>)
-          : null,
-      userAcquittance: map['userAcquittance'] != null
-          ? PersonModel.fromMap(map['userAcquittance'] as Map<String, dynamic>)
-          : null,
+      userCreate: map['userCreate'] != null ? map['userCreate'] as int : null,
+      userAcquittance:
+          map['userAcquittance'] != null ? map['userAcquittance'] as int : null,
       dateCreated:
           map['dateCreated'] != null ? map['dateCreated'] as String : null,
       dateAcquittance: map['dateAcquittance'] != null

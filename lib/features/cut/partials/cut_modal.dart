@@ -96,7 +96,9 @@ class _CutModalState extends State<CutModal> {
         cutName: _cutNameController.text,
         generateTitle: _generateTitle,
         person: _personTitle,
-        titleValue: double.parse(_titleValueController.text),
+        titleValue: _titleValueController.text.isEmpty
+            ? null
+            : double.parse(_titleValueController.text.replaceAll(",", ".")),
       );
     }
   }
