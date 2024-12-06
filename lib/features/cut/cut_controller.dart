@@ -88,7 +88,7 @@ class CutController extends ChangeNotifier {
     );
   }
 
-  Future<List?> getCutItens({
+  Future<List<Map<String, dynamic>>?> getCutItens({
     required int cutId,
   }) async {
     final DataResult response = await _dataServices.getWhere(
@@ -101,7 +101,9 @@ class CutController extends ChangeNotifier {
       },
       (data) {
         List cutItens = data.map(_createCutItensModel).toList();
-        return cutItens;
+        final List<Map<String, dynamic>> cutItensList =
+            _createCutItensList(cutItensDataList: cutItens);
+        return cutItensList;
       },
     );
   }
@@ -148,6 +150,30 @@ class CutController extends ChangeNotifier {
         }
       }
     }
+  }
+
+  List<Map<String, dynamic>> _createCutItensList(
+      {required List cutItensDataList}) {
+    Map<String, Map<String, dynamic>> groupedByColor = {};
+
+    for (CutItensModel cutItem in cutItensDataList) {
+      String? color = cutItem.color;
+      String? size = cutItem.size;
+      int? quantity = cutItem.quantity;
+
+      if (!groupedByColor.containsKey(color)) {
+        groupedByColor[color!] = {
+          "color": color,
+          "sizes": {},
+          "total": 0,
+        };
+      }
+
+      groupedByColor[color]?["sizes"][size] = quantity;
+      groupedByColor[color]?["total"] += quantity;
+    }
+    List<Map<String, dynamic>> result = groupedByColor.values.toList();
+    return result;
   }
 
   Future<UserModel> _getCurrentUser() async {

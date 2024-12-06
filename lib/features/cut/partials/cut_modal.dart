@@ -72,30 +72,12 @@ class _CutModalState extends State<CutModal> {
 
   Future<void> _getCutItens() async {
     if (widget.cut != null) {
+      _cutNameController.text = widget.cut!.name!;
       final response =
           await widget.controller.getCutItens(cutId: widget.cut!.id!);
 
-      Map<String, Map<String, dynamic>> groupedByColor = {};
-
-      for (CutItensModel cutItem in response!) {
-        String? color = cutItem.color;
-        String? size = cutItem.size;
-        int? quantity = cutItem.quantity;
-
-        if (!groupedByColor.containsKey(color)) {
-          groupedByColor[color!] = {
-            "color": color,
-            "sizes": {},
-            "total": 0,
-          };
-        }
-
-        groupedByColor[color]?["sizes"][size] = quantity;
-        groupedByColor[color]?["total"] += quantity;
-      }
-      List<Map<String, dynamic>> result = groupedByColor.values.toList();
       setState(() {
-        _rows = result;
+        _rows = response!;
       });
     }
   }
@@ -239,18 +221,24 @@ class _CutModalState extends State<CutModal> {
                                     style: AppTextStyles.titleTab,
                                   ),
                                 ),
-                                Checkbox(
-                                  value: _generateTitle,
-                                  activeColor: AppColors.primaryRed,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _generateTitle = value!;
-                                    });
-                                  },
+                                Visibility(
+                                  visible: widget.cut == null,
+                                  child: Checkbox(
+                                    value: _generateTitle,
+                                    activeColor: AppColors.primaryRed,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _generateTitle = value!;
+                                      });
+                                    },
+                                  ),
                                 ),
-                                const Text(
-                                  "Gerar Titulo?",
-                                  style: AppTextStyles.defaultText,
+                                Visibility(
+                                  visible: widget.cut == null,
+                                  child: const Text(
+                                    "Gerar Titulo?",
+                                    style: AppTextStyles.defaultText,
+                                  ),
                                 ),
                               ],
                             ),
@@ -439,7 +427,7 @@ class _CutModalState extends State<CutModal> {
                       ),
                       onPressed: _createCut,
                       child: Text(
-                        "Gerar corte",
+                        widget.cut == null ? "Gerar corte" : "Alterar corte",
                         style: AppTextStyles.buttonText
                             .copyWith(color: AppColors.primaryWhite),
                       ),
