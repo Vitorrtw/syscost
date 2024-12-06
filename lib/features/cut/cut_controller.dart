@@ -25,11 +25,6 @@ class CutController extends ChangeNotifier {
 
   CutState get state => _state;
 
-  void _changeState(CutState newState) {
-    _state = newState;
-    notifyListeners();
-  }
-
   Future<void> createCut({
     required List<Map<String, dynamic>> cutItensData,
     required String cutName,
@@ -57,6 +52,8 @@ class CutController extends ChangeNotifier {
       },
       (data) async {
         cutModel.id = data;
+
+        /// Create Cut itens
         await _createCutItens(cutItens: cutItensData, cut: cutModel);
         if (generateTitle) {
           final TitleModel title = _createTitleModel(
@@ -87,6 +84,24 @@ class CutController extends ChangeNotifier {
       (data) {
         List cutList = data.map(_createCutModel).toList();
         return cutList;
+      },
+    );
+  }
+
+  Future<List?> getCutItens({
+    required int cutId,
+  }) async {
+    final DataResult response = await _dataServices.getWhere(
+        tableName: TablesNames.cutItens, where: "CUTID = $cutId");
+
+    return response.fold(
+      (error) {
+        _changeState(CutStateError(error.message));
+        return null;
+      },
+      (data) {
+        List cutItens = data.map(_createCutItensModel).toList();
+        return cutItens;
       },
     );
   }
@@ -145,24 +160,6 @@ class CutController extends ChangeNotifier {
     }
   }
 
-  Future<List<CutItensModel>?> _getCutItens({
-    required int cutId,
-  }) async {
-    final DataResult response = await _dataServices.getWhere(
-        tableName: TablesNames.cutItens, where: "CUTID = $cutId");
-
-    return response.fold(
-      (error) {
-        _changeState(CutStateError(error.message));
-        return null;
-      },
-      (data) {
-        List<CutItensModel> cutItens = data.map(_createCutItensModel).toList();
-        return cutItens;
-      },
-    );
-  }
-
   TitleModel _createTitleModel({
     required CutModel cut,
     required PersonModel person,
@@ -197,5 +194,10 @@ class CutController extends ChangeNotifier {
         color: cutItensData["COLOR"],
         size: cutItensData["SIZE"],
         quantity: cutItensData["QUANTITY"]);
+  }
+
+  void _changeState(CutState newState) {
+    _state = newState;
+    notifyListeners();
   }
 }

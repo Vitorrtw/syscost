@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
+import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/widgets/custom_circular_progress_indicator.dart';
 
 import 'package:syscost/features/cut/cut_controller.dart';
+import 'package:syscost/features/cut/partials/cut_modal.dart';
 
 // ignore: must_be_immutable
 class CutTable extends StatefulWidget {
@@ -26,6 +28,18 @@ class CutTable extends StatefulWidget {
 }
 
 class _CutTableState extends State<CutTable> {
+  void _showCutModal({required CutModel cutModal}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => CutModal(
+        controller: widget.controller,
+        onCutAction: widget.onCutAction,
+        cut: cutModal,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.isLoading
@@ -157,7 +171,9 @@ class _CutTableState extends State<CutTable> {
                               child: Row(
                                 children: [
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _showCutModal(cutModal: cut);
+                                    },
                                     icon: const Icon(
                                       Icons.edit_document,
                                       color: AppColors.primaryDarkGray,
@@ -170,7 +186,7 @@ class _CutTableState extends State<CutTable> {
                                     onPressed: () {},
                                     icon: Icon(
                                       Icons.power_settings_new,
-                                      color: cut.status == 1
+                                      color: cut.status == 0
                                           ? AppColors.primaryGreen
                                           : AppColors.primaryRed,
                                     ),

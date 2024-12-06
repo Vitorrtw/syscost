@@ -1,9 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:syscost/common/models/person_model.dart';
-import 'package:syscost/common/models/user_model.dart';
-
 enum TitleStatus {
   active("Ativo", 1),
   inactive("Inativo", 2),

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
+import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/utils/functions.dart';
 import 'package:syscost/common/utils/validators.dart';
 import 'package:syscost/common/widgets/custom_error_dialog.dart';
 import 'package:syscost/common/widgets/custom_search_person.dart';
+import 'package:syscost/common/widgets/custom_table_head_cell.dart';
 import 'package:syscost/features/cut/cut_controller.dart';
 
 class CutModal extends StatefulWidget {
@@ -28,7 +30,7 @@ class CutModal extends StatefulWidget {
 
 class _CutModalState extends State<CutModal> {
   final _cutFormKey = GlobalKey<FormState>();
-  final List<Map<String, dynamic>> _rows = [];
+  List<Map<String, dynamic>> _rows = [];
   bool _generateTitle = false;
   PersonModel? _personTitle;
 
@@ -56,16 +58,52 @@ class _CutModalState extends State<CutModal> {
     });
   }
 
+  @override
+  void initState() {
+    _getCutItens();
+    super.initState();
+  }
+
   void _removeRow(int index) {
     setState(() {
       _rows.removeAt(index);
     });
   }
 
+  Future<void> _getCutItens() async {
+    if (widget.cut != null) {
+      final response =
+          await widget.controller.getCutItens(cutId: widget.cut!.id!);
+
+      Map<String, Map<String, dynamic>> groupedByColor = {};
+
+      for (CutItensModel cutItem in response!) {
+        String? color = cutItem.color;
+        String? size = cutItem.size;
+        int? quantity = cutItem.quantity;
+
+        if (!groupedByColor.containsKey(color)) {
+          groupedByColor[color!] = {
+            "color": color,
+            "sizes": {},
+            "total": 0,
+          };
+        }
+
+        groupedByColor[color]?["sizes"][size] = quantity;
+        groupedByColor[color]?["total"] += quantity;
+      }
+      List<Map<String, dynamic>> result = groupedByColor.values.toList();
+      setState(() {
+        _rows = result;
+      });
+    }
+  }
+
   void _updateTotal(int index) {
-    final sizes = _rows[index]["sizes"] as Map<String, int>;
+    final sizes = (_rows[index]["sizes"] as Map).cast<String, int>();
     setState(() {
-      _rows[index]["total"] = sizes.values.reduce((a, b) => a + b);
+      _rows[index]["total"] = sizes.values.fold(0, (sum, value) => sum + value);
     });
   }
 
@@ -231,138 +269,17 @@ class _CutModalState extends State<CutModal> {
                       const TableRow(
                         decoration: BoxDecoration(color: AppColors.primaryRed),
                         children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "Cor",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "P",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "M",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "G",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "GG",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "GG1",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "GG2",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "GG3",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "GG4",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "Total",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "Ação",
-                                style: AppTextStyles.titleTab,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
+                          CustomTableHeadCell(text: "Cor"),
+                          CustomTableHeadCell(text: "P"),
+                          CustomTableHeadCell(text: "M"),
+                          CustomTableHeadCell(text: "G"),
+                          CustomTableHeadCell(text: "GG"),
+                          CustomTableHeadCell(text: "GG1"),
+                          CustomTableHeadCell(text: "GG2"),
+                          CustomTableHeadCell(text: "GG3"),
+                          CustomTableHeadCell(text: "GG4"),
+                          CustomTableHeadCell(text: "Total"),
+                          CustomTableHeadCell(text: "Ação"),
                         ],
                       ),
                       ..._rows.asMap().entries.map((entry) {
@@ -376,6 +293,7 @@ class _CutModalState extends State<CutModal> {
                               child: TextFormField(
                                 validator: Validators.validateGenericNotNull,
                                 textAlign: TextAlign.center,
+                                initialValue: row["color"],
                                 decoration:
                                     const InputDecoration(hintText: "Cor"),
                                 onChanged: (value) {
@@ -389,6 +307,8 @@ class _CutModalState extends State<CutModal> {
                                 verticalAlignment:
                                     TableCellVerticalAlignment.middle,
                                 child: TextFormField(
+                                  initialValue:
+                                      row["sizes"][size]?.toString() ?? "0",
                                   maxLength: 3,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly
