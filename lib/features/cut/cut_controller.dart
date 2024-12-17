@@ -124,16 +124,6 @@ class CutController extends ChangeNotifier {
     );
   }
 
-  CutModel _createCutModel(Map<String, dynamic> cutData) {
-    return CutModel(
-        id: cutData["ID"],
-        completion: cutData["COMPLETION"],
-        status: cutData["STATUS"],
-        name: cutData["NAME"],
-        userCreate: cutData["USERCREATE"],
-        userFinished: cutData["USERFINISHED"]);
-  }
-
   CutItensModel _createCutItensModel(Map<String, dynamic> cutItensData) {
     return CutItensModel(
         cutId: cutItensData["CUTID"],
@@ -160,13 +150,19 @@ class CutController extends ChangeNotifier {
   }) async {
     _changeState(CutStateLoading());
     final UserModel currentUser = await _getCurrentUser();
-    final CutModel cutModel = CutModel(
-      id: null,
+
+    // Get QRP
+    final qrpResponse = await _dataServices.getSequence(sequence: Sequence.QRP);
+
+    if (qrpResponse.error != null) {
+      _changeState(CutStateError(qrpResponse.error!.message));
+      return;
+    }
+
+    final cutModel = CutModel.createDefault(
       name: cutName,
-      status: 0,
-      completion: null,
-      userCreate: currentUser.id,
-      userFinished: null,
+      userCreate: currentUser.id!,
+      qrp: qrpResponse.data,
     );
 
     final response = await _dataServices.insertData(
@@ -208,7 +204,7 @@ class CutController extends ChangeNotifier {
         return null;
       },
       (data) {
-        List cutList = data.map(_createCutModel).toList();
+        List cutList = data.map(CutModel.fromDb).toList();
         return cutList;
       },
     );
@@ -239,6 +235,7 @@ class CutController extends ChangeNotifier {
     required String cutName,
     required List<Map<String, dynamic>> cutItens,
     required int cutStatus,
+    required int qrp,
     required String? completion,
     required int userCreate,
     required int? userFinished,
@@ -250,6 +247,7 @@ class CutController extends ChangeNotifier {
       name: cutName,
       status: cutStatus,
       completion: completion,
+      qrp: qrp,
       userCreate: userCreate,
       userFinished: userFinished,
     );

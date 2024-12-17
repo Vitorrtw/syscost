@@ -138,6 +138,7 @@ class _CutModalState extends State<CutModal> {
         cutId: widget.cut!.id!,
         cutName: _cutNameController.text,
         cutItens: _rows,
+        qrp: widget.cut!.qrp!,
         cutStatus: widget.cut!.status!,
         completion: widget.cut!.completion,
         userCreate: widget.cut!.userCreate!,

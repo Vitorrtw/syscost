@@ -135,7 +135,15 @@ class SqliteDataServices extends DataServices {
 
       final response = await dataBase.query(TablesNames.sequence,
           where: "NAME = '${sequence.name}'");
-      return DataResult.success(response);
+
+      final Map<String, dynamic> qrpData = response.first;
+
+      final int qrp = qrpData["VALUE"] + 1; // Add new value
+
+      await dataBase.update(TablesNames.sequence, {"VALUE": qrp},
+          where: "NAME = 'QRP'"); // set the new value
+
+      return DataResult.success(qrp);
     } catch (e) {
       return DataResult.failure(GeneralTextException(
           textCode: "Error to get sequence : Error: ${e.toString()}"));

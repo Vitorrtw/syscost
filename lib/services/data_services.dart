@@ -1,7 +1,9 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:syscost/common/data/data_result.dart';
 
 enum Sequence {
-  qrp,
+  QRP,
 }
 
 abstract class DataServices {

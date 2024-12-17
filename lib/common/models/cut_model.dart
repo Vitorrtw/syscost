@@ -50,4 +50,32 @@ class CutModel {
 
   factory CutModel.fromJson(String source) =>
       CutModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  factory CutModel.createDefault({
+    required String name,
+    required int userCreate,
+    required int qrp,
+  }) {
+    return CutModel(
+      id: null,
+      name: name,
+      status: 0,
+      completion: null,
+      qrp: qrp,
+      userCreate: userCreate,
+      userFinished: null,
+    );
+  }
+
+  factory CutModel.fromDb(Map<String, dynamic> cutData) {
+    return CutModel(
+      id: cutData["ID"],
+      completion: cutData["COMPLETION"],
+      status: cutData["STATUS"],
+      qrp: cutData["QRP"],
+      name: cutData["NAME"],
+      userCreate: cutData["USERCREATE"],
+      userFinished: cutData["USERFINISHED"],
+    );
+  }
 }
