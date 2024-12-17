@@ -161,7 +161,7 @@ class _PartialUserModalState extends State<PartialUserModal> {
                       backgroundColor: AppColors.primaryRed,
                     ),
                     child: Text(
-                      widget.user == null ? "Cadastrat" : "Alterar",
+                      widget.user == null ? "Cadastra" : "Alterar",
                       style: AppTextStyles.buttonText.copyWith(
                         color: AppColors.primaryWhite,
                       ),

@@ -1,5 +1,9 @@
 import 'package:syscost/common/data/data_result.dart';
 
+enum Sequence {
+  qrp,
+}
+
 abstract class DataServices {
   Future<DataResult> insertData({
     required String tableName,
@@ -24,5 +28,9 @@ abstract class DataServices {
   Future<DataResult> deleteWhere({
     required String tableName,
     required String where,
+  });
+
+  Future<DataResult> getSequence({
+    required Sequence sequence,
   });
 }

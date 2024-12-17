@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
 import 'package:syscost/common/models/cut_model.dart';
+import 'package:syscost/common/widgets/custom_choose_dialog.dart';
 import 'package:syscost/common/widgets/custom_circular_progress_indicator.dart';
+import 'package:syscost/common/widgets/custom_error_dialog.dart';
 
 import 'package:syscost/features/cut/cut_controller.dart';
 import 'package:syscost/features/cut/partials/cut_modal.dart';
@@ -29,15 +31,39 @@ class CutTable extends StatefulWidget {
 
 class _CutTableState extends State<CutTable> {
   void _showCutModal({required CutModel cutModal}) {
-    showDialog(
+    if (cutModal.status != 1) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => CutModal(
+          controller: widget.controller,
+          onCutAction: widget.onCutAction,
+          cut: cutModal,
+        ),
+      );
+    } else {
+      showCustomErrorDialog(context, "O Corte já se encontra Fechado!");
+    }
+  }
+
+  Future<void> _closeCut({required CutModel cut}) async {
+    if (cut.status == 1) {
+      showCustomErrorDialog(context, "O corte já se encontra fechado!");
+      return;
+    }
+
+    final int userChoose = await CustomChooseDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => CutModal(
-        controller: widget.controller,
-        onCutAction: widget.onCutAction,
-        cut: cutModal,
-      ),
+      message:
+          "Deseja realmente fechar o corte ${cut.id}? Uma vez fechado o mesmo não pode ser mais alterado!",
+      progressButton: "Sim",
+      cancelMessage: "Cancelar",
     );
+
+    if (userChoose == 1) {
+      await widget.controller.closeCut(cut: cut);
+      widget.onCutAction();
+    }
   }
 
   @override
@@ -183,7 +209,9 @@ class _CutTableState extends State<CutTable> {
                                     width: 10,
                                   ),
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _closeCut(cut: cut);
+                                    },
                                     icon: Icon(
                                       Icons.power_settings_new,
                                       color: cut.status == 0

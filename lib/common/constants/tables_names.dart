@@ -6,4 +6,5 @@ class TablesNames {
   static const String cutItens = "SYS_CUTS_ITENS";
   static const String users = "SYS_USERS";
   static const String persons = "SYS_PERSONS";
+  static const String sequence = "SYS_SEQUENCES";
 }

@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:syscost/common/constants/tables_names.dart';
 import 'package:syscost/common/data/data_result.dart';
 import 'package:syscost/common/data/exceptions.dart';
 import 'package:syscost/services/data_services.dart';
@@ -124,6 +125,20 @@ class SqliteDataServices extends DataServices {
       return DataResult.failure(GeneralTextException(
           textCode:
               "Error to get data from $tableName : Error: ${e.toString()}"));
+    }
+  }
+
+  @override
+  Future<DataResult> getSequence({required Sequence sequence}) async {
+    try {
+      final dataBase = await _dataBaseConnect();
+
+      final response = await dataBase.query(TablesNames.sequence,
+          where: "NAME = '${sequence.name}'");
+      return DataResult.success(response);
+    } catch (e) {
+      return DataResult.failure(GeneralTextException(
+          textCode: "Error to get sequence : Error: ${e.toString()}"));
     }
   }
 }

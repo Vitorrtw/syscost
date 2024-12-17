@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syscost/common/constants/app_colors.dart';
 import 'package:syscost/common/constants/app_text_styles.dart';
-import 'package:syscost/common/models/cut_itens_model.dart';
 import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/utils/functions.dart';
@@ -99,6 +98,11 @@ class _CutModalState extends State<CutModal> {
   Future<void> _createCut() async {
     // Cut Validators
     if (_cutFormKey.currentState!.validate()) {
+      if (_rows.isEmpty) {
+        showCustomErrorDialog(context, "O corte não possui item Cadastrado!");
+        return;
+      }
+
       if (_generateTitle && _personTitle == null) {
         showCustomErrorDialog(
             context, "Nenhuma pessoa selecionada para geração do titulo!");
@@ -120,7 +124,27 @@ class _CutModalState extends State<CutModal> {
             ? null
             : double.parse(_titleValueController.text.replaceAll(",", ".")),
       );
+      widget.onCutAction();
     }
+  }
+
+  Future<void> _alterCut() async {
+    if (_cutFormKey.currentState!.validate()) {
+      if (_rows.isEmpty) {
+        showCustomErrorDialog(context, "O corte não possui item Cadastrado!");
+        return;
+      }
+      await widget.controller.alterCut(
+        cutId: widget.cut!.id!,
+        cutName: _cutNameController.text,
+        cutItens: _rows,
+        cutStatus: widget.cut!.status!,
+        completion: widget.cut!.completion,
+        userCreate: widget.cut!.userCreate!,
+        userFinished: widget.cut!.userFinished,
+      );
+    }
+    widget.onCutAction();
   }
 
   @override
@@ -425,7 +449,13 @@ class _CutModalState extends State<CutModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryRed,
                       ),
-                      onPressed: _createCut,
+                      onPressed: () {
+                        if (widget.cut == null) {
+                          _createCut();
+                        } else {
+                          _alterCut();
+                        }
+                      },
                       child: Text(
                         widget.cut == null ? "Gerar corte" : "Alterar corte",
                         style: AppTextStyles.buttonText

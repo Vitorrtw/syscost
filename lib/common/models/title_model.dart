@@ -29,6 +29,7 @@ class TitleModel {
   final int? person;
   final int? status;
   final int? type;
+  final int? qrp;
   final double? discount;
   final double? fees;
   final double? value;
@@ -46,6 +47,7 @@ class TitleModel {
     this.description,
     this.status,
     this.type,
+    this.qrp,
     this.discount,
     this.fees,
     this.value,
@@ -61,6 +63,7 @@ class TitleModel {
       'person': person,
       'status': status,
       'type': type,
+      'qrp': qrp,
       'discount': discount,
       'fees': fees,
       'value': value,
@@ -80,6 +83,7 @@ class TitleModel {
       person: map['person'] != null ? map['person'] as int : null,
       status: map['status'] != null ? map['status'] as int : null,
       type: map['type'] != null ? map['type'] as int : null,
+      qrp: map['qrp'] != null ? map['qrp'] as int : null,
       discount: map['discount'] != null ? map['discount'] as double : null,
       fees: map['fees'] != null ? map['fees'] as double : null,
       value: map['value'] != null ? map['value'] as double : null,

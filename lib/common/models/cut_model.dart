@@ -4,16 +4,18 @@ import 'dart:convert';
 class CutModel {
   int? id;
   final String? name;
-  final int? status;
+  int? status;
   final String? completion;
+  final int? qrp;
   final int? userCreate;
-  final int? userFinished;
+  int? userFinished;
 
   CutModel({
     required this.id,
     required this.name,
     required this.status,
     required this.completion,
+    required this.qrp,
     required this.userCreate,
     required this.userFinished,
   });
@@ -24,6 +26,7 @@ class CutModel {
       'name': name,
       'status': status,
       'completion': completion,
+      'qrp': qrp,
       'userCreate': userCreate,
       'userFinished': userFinished,
     };
@@ -36,6 +39,7 @@ class CutModel {
       status: map['status'] != null ? map['status'] as int : null,
       completion:
           map['completion'] != null ? map['completion'] as String : null,
+      qrp: map['qrp'] != null ? map['qrp'] as int : null,
       userCreate: map['userCreate'] != null ? map['userCreate'] as int : null,
       userFinished:
           map['userFinished'] != null ? map['userFinished'] as int : null,

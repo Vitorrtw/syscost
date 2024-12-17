@@ -25,6 +25,132 @@ class CutController extends ChangeNotifier {
 
   CutState get state => _state;
 
+  void _changeState(CutState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+
+  Future<void> _createCutTitle({required TitleModel title}) async {
+    final response = await _dataServices.insertData(
+      tableName: TablesNames.titles,
+      data: title.toMap(),
+    );
+
+    if (response.error != null) {
+      _changeState(CutStateError(response.error!.message));
+      return;
+    }
+
+    _changeState(CutStateSuccess("Corte Cadastrado com Sucesso!"));
+  }
+
+  Future<void> _createCutItens({
+    required CutModel cut,
+    required List<Map<String, dynamic>> cutItens,
+  }) async {
+    for (Map<String, dynamic> item in cutItens) {
+      final color = item['color'];
+      final sizes = Map<String, dynamic>.from(item['sizes']);
+
+      for (var entry in sizes.entries) {
+        final cutModel = CutItensModel(
+          cutId: cut.id,
+          color: color,
+          size: entry.key,
+          quantity: int.tryParse(entry.value.toString()) ?? 0,
+        );
+
+        final response = await _dataServices.insertData(
+          tableName: TablesNames.cutItens,
+          data: cutModel.toMap(),
+        );
+
+        if (response.error != null) {
+          _changeState(CutStateError(response.error!.message));
+        }
+      }
+    }
+  }
+
+  List<Map<String, dynamic>> _createCutItensList(
+      {required List cutItensDataList}) {
+    Map<String, Map<String, dynamic>> groupedByColor = {};
+
+    for (CutItensModel cutItem in cutItensDataList) {
+      String? color = cutItem.color;
+      String? size = cutItem.size;
+      int? quantity = cutItem.quantity;
+
+      if (!groupedByColor.containsKey(color)) {
+        groupedByColor[color!] = {
+          "color": color,
+          "sizes": {},
+          "total": 0,
+        };
+      }
+
+      groupedByColor[color]?["sizes"][size] = quantity;
+      groupedByColor[color]?["total"] += quantity;
+    }
+    List<Map<String, dynamic>> result = groupedByColor.values.toList();
+    return result;
+  }
+
+  Future<UserModel> _getCurrentUser() async {
+    String? userData = await _securedStorage.readOne(key: "CURRENT_USER");
+    if (userData != null) {
+      UserModel currentUser = UserModel.fromJson(userData);
+      return currentUser;
+    } else {
+      throw Exception("Erro: User not find");
+    }
+  }
+
+  TitleModel _createTitleModel({
+    required CutModel cut,
+    required PersonModel person,
+    required double titleValue,
+    required UserModel usercreate,
+  }) {
+    return TitleModel(
+      name: "Titulo Corte: ${cut.id}",
+      description: "Titulo corte de numero: ${cut.id} - Nome: ${cut.name}",
+      status: TitleStatus.active.code,
+      person: person.id,
+      userCreate: usercreate.id,
+      dateCreated: getDateTimeNow(),
+      type: TitleType.obligation.code,
+      value: titleValue,
+    );
+  }
+
+  CutModel _createCutModel(Map<String, dynamic> cutData) {
+    return CutModel(
+        id: cutData["ID"],
+        completion: cutData["COMPLETION"],
+        status: cutData["STATUS"],
+        name: cutData["NAME"],
+        userCreate: cutData["USERCREATE"],
+        userFinished: cutData["USERFINISHED"]);
+  }
+
+  CutItensModel _createCutItensModel(Map<String, dynamic> cutItensData) {
+    return CutItensModel(
+        cutId: cutItensData["CUTID"],
+        color: cutItensData["COLOR"],
+        size: cutItensData["SIZE"],
+        quantity: cutItensData["QUANTITY"]);
+  }
+
+  Future<void> _deleteCutItens({required int cutId}) async {
+    final response = await _dataServices.deleteWhere(
+        tableName: TablesNames.cutItens, where: "CUTID = $cutId");
+
+    if (response.error != null) {
+      _changeState(CutStateError(response.error!.message));
+    }
+  }
+
   Future<void> createCut({
     required List<Map<String, dynamic>> cutItensData,
     required String cutName,
@@ -108,12 +234,31 @@ class CutController extends ChangeNotifier {
     );
   }
 
-  Future<void> _createCutTitle({required TitleModel title}) async {
-    // Title Model
+  Future<void> alterCut({
+    required int cutId,
+    required String cutName,
+    required List<Map<String, dynamic>> cutItens,
+    required int cutStatus,
+    required String? completion,
+    required int userCreate,
+    required int? userFinished,
+  }) async {
+    _changeState(CutStateLoading());
 
-    final response = await _dataServices.insertData(
-      tableName: TablesNames.titles,
-      data: title.toMap(),
+    final CutModel cut = CutModel(
+      id: cutId,
+      name: cutName,
+      status: cutStatus,
+      completion: completion,
+      userCreate: userCreate,
+      userFinished: userFinished,
+    );
+
+    // Alter Cut data
+    final response = await _dataServices.updateData(
+      tableName: TablesNames.cuts,
+      data: cut.toMap(),
+      where: "ID = $cutId",
     );
 
     if (response.error != null) {
@@ -121,109 +266,33 @@ class CutController extends ChangeNotifier {
       return;
     }
 
-    _changeState(CutStateSuccess("Corte Cadastrado com Sucesso!"));
+    /// Delete Cut itens to add new ones
+    await _deleteCutItens(cutId: cutId);
+
+    await _createCutItens(cut: cut, cutItens: cutItens);
+
+    _changeState(CutStateSuccess("Corte Alterado com sucesso!"));
   }
 
-  Future<void> _createCutItens({
-    required CutModel cut,
-    required List<Map<String, dynamic>> cutItens,
-  }) async {
-    for (Map<String, dynamic> item in cutItens) {
-      final color = item['color'];
-      final sizes = item['sizes'] as Map<String, dynamic>;
+  Future<void> closeCut({required CutModel cut}) async {
+    _changeState(CutStateLoading());
 
-      for (var entry in sizes.entries) {
-        final cutModel = CutItensModel(
-          cutId: cut.id,
-          color: color,
-          size: entry.key,
-          quantity: int.tryParse(entry.value.toString()) ?? 0,
-        );
+    final UserModel user = await _getCurrentUser();
 
-        final response = await _dataServices.insertData(
-          tableName: TablesNames.cutItens,
-          data: cutModel.toMap(),
-        );
+    // Set Cut Values
+    cut.status = 1;
+    cut.userFinished = user.id;
 
-        if (response.error != null) {
-          _changeState(CutStateError(response.error!.message));
-        }
-      }
-    }
-  }
-
-  List<Map<String, dynamic>> _createCutItensList(
-      {required List cutItensDataList}) {
-    Map<String, Map<String, dynamic>> groupedByColor = {};
-
-    for (CutItensModel cutItem in cutItensDataList) {
-      String? color = cutItem.color;
-      String? size = cutItem.size;
-      int? quantity = cutItem.quantity;
-
-      if (!groupedByColor.containsKey(color)) {
-        groupedByColor[color!] = {
-          "color": color,
-          "sizes": {},
-          "total": 0,
-        };
-      }
-
-      groupedByColor[color]?["sizes"][size] = quantity;
-      groupedByColor[color]?["total"] += quantity;
-    }
-    List<Map<String, dynamic>> result = groupedByColor.values.toList();
-    return result;
-  }
-
-  Future<UserModel> _getCurrentUser() async {
-    String? userData = await _securedStorage.readOne(key: "CURRENT_USER");
-    if (userData != null) {
-      UserModel currentUser = UserModel.fromJson(userData);
-      return currentUser;
-    } else {
-      throw Exception("Erro: User not find");
-    }
-  }
-
-  TitleModel _createTitleModel({
-    required CutModel cut,
-    required PersonModel person,
-    required double titleValue,
-    required UserModel usercreate,
-  }) {
-    return TitleModel(
-      name: "Titulo Corte: ${cut.id}",
-      description: "Titulo corte de numero: ${cut.id} - Nome: ${cut.name}",
-      status: TitleStatus.active.code,
-      person: person.id,
-      userCreate: usercreate.id,
-      dateCreated: getDateTimeNow(),
-      type: TitleType.obligation.code,
-      value: titleValue,
+    final response = await _dataServices.updateData(
+      tableName: TablesNames.cuts,
+      data: cut.toMap(),
+      where: "ID = ${cut.id}",
     );
-  }
 
-  CutModel _createCutModel(Map<String, dynamic> cutData) {
-    return CutModel(
-        id: cutData["ID"],
-        completion: cutData["COMPLETION"],
-        status: cutData["STATUS"],
-        name: cutData["NAME"],
-        userCreate: cutData["USECREATE"],
-        userFinished: cutData["USERFINISHED"]);
-  }
-
-  CutItensModel _createCutItensModel(Map<String, dynamic> cutItensData) {
-    return CutItensModel(
-        cutId: cutItensData["CUTID"],
-        color: cutItensData["COLOR"],
-        size: cutItensData["SIZE"],
-        quantity: cutItensData["QUANTITY"]);
-  }
-
-  void _changeState(CutState newState) {
-    _state = newState;
-    notifyListeners();
+    if (response.error != null) {
+      _changeState(CutStateError(response.error!.message));
+      return;
+    }
+    _changeState(CutStateSuccess("Corte Fechado com sucesso!"));
   }
 }
