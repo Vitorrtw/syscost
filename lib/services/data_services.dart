@@ -3,7 +3,7 @@
 import 'package:syscost/common/data/data_result.dart';
 
 enum Sequence {
-  QRP,
+  qrp,
 }
 
 abstract class DataServices {

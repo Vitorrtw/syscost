@@ -11,9 +11,11 @@ String toTitleCase(String text) {
   }).join(" ");
 }
 
-String getDateTimeNow() {
-  DateTime now = DateTime.now();
+class DateTimeAdapter {
+  String getDateTimeNow() {
+    DateTime now = DateTime.now();
 
-  String formattedDate = DateFormat("dd/MM/yyyy - HH:mm:ss").format(now);
-  return formattedDate;
+    String formattedDate = DateFormat("dd/MM/yyyy - HH:mm:ss").format(now);
+    return formattedDate;
+  }
 }

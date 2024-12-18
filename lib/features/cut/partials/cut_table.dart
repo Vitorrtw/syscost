@@ -66,6 +66,25 @@ class _CutTableState extends State<CutTable> {
     }
   }
 
+  Future<void> _deleteCut({required CutModel cut}) async {
+    if (cut.status == 1) {
+      showCustomErrorDialog(context, "O corte já se encontra fechado!");
+      return;
+    }
+
+    final int userChoose = await CustomChooseDialog(
+      context: context,
+      message: "Deseja realmente excluir o corte ${cut.id}?",
+      progressButton: "Sim",
+      cancelMessage: "Cancelar",
+    );
+
+    if (userChoose == 1) {
+      await widget.controller.deleteCut(cut: cut);
+      widget.onCutAction();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.isLoading
@@ -223,7 +242,9 @@ class _CutTableState extends State<CutTable> {
                                     width: 10,
                                   ),
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _deleteCut(cut: cut);
+                                    },
                                     icon: const Icon(
                                       Icons.delete_forever,
                                       color: AppColors.primaryRed,

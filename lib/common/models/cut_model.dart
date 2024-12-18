@@ -5,7 +5,7 @@ class CutModel {
   int? id;
   final String? name;
   int? status;
-  final String? completion;
+  String? completion;
   final int? qrp;
   final int? userCreate;
   int? userFinished;

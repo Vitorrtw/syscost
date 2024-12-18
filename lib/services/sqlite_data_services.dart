@@ -141,7 +141,7 @@ class SqliteDataServices extends DataServices {
       final int qrp = qrpData["VALUE"] + 1; // Add new value
 
       await dataBase.update(TablesNames.sequence, {"VALUE": qrp},
-          where: "NAME = 'QRP'"); // set the new value
+          where: "NAME = 'qrp'"); // set the new value
 
       return DataResult.success(qrp);
     } catch (e) {

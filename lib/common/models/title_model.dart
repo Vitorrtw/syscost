@@ -1,6 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:syscost/common/models/cut_model.dart';
+import 'package:syscost/common/models/person_model.dart';
+import 'package:syscost/common/models/user_model.dart';
+import 'package:syscost/common/utils/functions.dart';
+
 enum TitleStatus {
   active("Ativo", 1),
   inactive("Inativo", 2),
@@ -102,4 +107,23 @@ class TitleModel {
 
   factory TitleModel.fromJson(String source) =>
       TitleModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  factory TitleModel.createFromCut({
+    required CutModel cut,
+    required PersonModel person,
+    required double titleValue,
+    required UserModel usercreate,
+  }) {
+    return TitleModel(
+      name: "Titulo Corte: ${cut.id}",
+      description: "Titulo corte de numero: ${cut.id} - Nome: ${cut.name}",
+      status: TitleStatus.active.code,
+      person: person.id,
+      userCreate: usercreate.id,
+      qrp: cut.qrp,
+      dateCreated: DateTimeAdapter().getDateTimeNow(),
+      type: TitleType.obligation.code,
+      value: titleValue,
+    );
+  }
 }
