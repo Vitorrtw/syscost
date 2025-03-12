@@ -6,7 +6,7 @@ import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/models/title_model.dart';
 import 'package:syscost/common/models/user_model.dart';
-import 'package:syscost/common/utils/functions.dart';
+import 'package:syscost/common/utils/datetime_adapter.dart';
 import 'package:syscost/features/cut/cut_state.dart';
 import 'package:syscost/services/data_services.dart';
 import 'package:syscost/services/secure_storage.dart';
@@ -139,6 +139,7 @@ class CutController extends ChangeNotifier {
       qrp: qrp,
       userCreate: userCreate,
       userFinished: userFinished,
+      createdAt: null,
     );
 
     // Alter Cut data
@@ -169,7 +170,7 @@ class CutController extends ChangeNotifier {
     // Set Cut Values
     cut.status = 1;
     cut.userFinished = user.id;
-    cut.completion = DateTimeAdapter().getDateTimeNow();
+    cut.completion = DateTimeAdapter().getDateTimeNowBR();
 
     final response = await _dataServices.updateData(
       tableName: TablesNames.cuts,

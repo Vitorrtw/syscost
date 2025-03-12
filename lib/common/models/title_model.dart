@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:syscost/common/models/cut_model.dart';
 import 'package:syscost/common/models/person_model.dart';
 import 'package:syscost/common/models/user_model.dart';
-import 'package:syscost/common/utils/functions.dart';
+import 'package:syscost/common/utils/datetime_adapter.dart';
 
 enum TitleStatus {
   active("Ativo", 1),
@@ -121,7 +121,7 @@ class TitleModel {
       person: person.id,
       userCreate: usercreate.id,
       qrp: cut.qrp,
-      dateCreated: DateTimeAdapter().getDateTimeNow(),
+      dateCreated: DateTimeAdapter().getDateTimeNowBR(),
       type: TitleType.obligation.code,
       value: titleValue,
     );

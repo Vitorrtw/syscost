@@ -178,8 +178,11 @@ class _CutModalState extends State<CutModal> {
                           children: [
                             Image.asset(
                               "assets/app/img/person_create.gif",
-                              height: 150,
+                              height: 140,
                               fit: BoxFit.contain,
+                            ),
+                            const SizedBox(
+                              height: 10,
                             ),
                             SizedBox(
                               width: double.infinity,

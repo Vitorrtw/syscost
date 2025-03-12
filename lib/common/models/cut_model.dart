@@ -1,10 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:syscost/common/utils/datetime_adapter.dart';
+
 class CutModel {
   int? id;
   final String? name;
   int? status;
+  final String? createdAt;
   String? completion;
   final int? qrp;
   final int? userCreate;
@@ -18,6 +21,7 @@ class CutModel {
     required this.qrp,
     required this.userCreate,
     required this.userFinished,
+    required this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +29,7 @@ class CutModel {
       'id': id,
       'name': name,
       'status': status,
+      'createdAt': createdAt,
       'completion': completion,
       'qrp': qrp,
       'userCreate': userCreate,
@@ -37,6 +42,7 @@ class CutModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
       status: map['status'] != null ? map['status'] as int : null,
+      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
       completion:
           map['completion'] != null ? map['completion'] as String : null,
       qrp: map['qrp'] != null ? map['qrp'] as int : null,
@@ -64,6 +70,7 @@ class CutModel {
       qrp: qrp,
       userCreate: userCreate,
       userFinished: null,
+      createdAt: DateTimeAdapter().getDateTimeNowBR(),
     );
   }
 
@@ -76,6 +83,7 @@ class CutModel {
       name: cutData["NAME"],
       userCreate: cutData["USERCREATE"],
       userFinished: cutData["USERFINISHED"],
+      createdAt: cutData["CREATEDAT"],
     );
   }
 }
