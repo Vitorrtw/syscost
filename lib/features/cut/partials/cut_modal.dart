@@ -117,7 +117,7 @@ class _CutModalState extends State<CutModal> {
 
       await widget.controller.createCut(
         cutItensData: _rows,
-        cutName: _cutNameController.text,
+        cutName: _cutNameController.text.trim(),
         generateTitle: _generateTitle,
         person: _personTitle,
         titleValue: _titleValueController.text.isEmpty

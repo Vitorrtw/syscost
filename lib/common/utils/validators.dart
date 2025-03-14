@@ -2,6 +2,7 @@ class Validators {
   Validators._();
 
   static const int defaultTextNumCaracters = 60;
+  static const int defaultLargeTextNumCaracters = 255;
 
   static String? validateGenericNotNull(String? value) {
     if (value == null || value.isEmpty) {

@@ -91,7 +91,9 @@ class _DrawerMenuState extends State<DrawerMenu> {
           ListTile(
             leading: const Icon(Icons.monetization_on),
             title: const Text("Titulos"),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushReplacementNamed(context, NamedRoute.titlePage);
+            },
           ),
         ],
       ),

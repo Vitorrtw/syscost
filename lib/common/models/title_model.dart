@@ -7,7 +7,7 @@ import 'package:syscost/common/models/user_model.dart';
 import 'package:syscost/common/utils/datetime_adapter.dart';
 
 enum TitleStatus {
-  active("Ativo", 1),
+  active("Aberto", 1),
   inactive("Inativo", 2),
   paid("Quitado", 3);
 
@@ -32,15 +32,17 @@ class TitleModel {
   final String? name;
   final String? description;
   final int? person;
-  final int? status;
-  final int? type;
+  final TitleStatus? status;
+  final TitleType? type;
   final int? qrp;
   final double? discount;
   final double? fees;
   final double? value;
+  final double? faceValue;
   final int? userCreate;
   final int? userAcquittance;
-  final String? dateCreated;
+  final String? createdAt;
+  final String? dueDate;
   final String? dateAcquittance;
 
   TitleModel({
@@ -56,7 +58,9 @@ class TitleModel {
     this.discount,
     this.fees,
     this.value,
-    this.dateCreated,
+    this.faceValue,
+    this.createdAt,
+    this.dueDate,
     this.dateAcquittance,
   });
 
@@ -66,15 +70,17 @@ class TitleModel {
       'name': name,
       'description': description,
       'person': person,
-      'status': status,
-      'type': type,
+      'status': status?.code,
+      'type': type?.code,
       'qrp': qrp,
       'discount': discount,
       'fees': fees,
       'value': value,
+      'faceValue': faceValue,
       'userCreate': userCreate,
       'userAcquittance': userAcquittance,
-      'dateCreated': dateCreated,
+      'createdAt': createdAt,
+      'dueDate': dueDate,
       'dateAcquittance': dateAcquittance,
     };
   }
@@ -86,8 +92,12 @@ class TitleModel {
       description:
           map['description'] != null ? map['description'] as String : null,
       person: map['person'] != null ? map['person'] as int : null,
-      status: map['status'] != null ? map['status'] as int : null,
-      type: map['type'] != null ? map['type'] as int : null,
+      status: map['status'] != null
+          ? TitleStatus.values.firstWhere((e) => e.code == map['status'])
+          : null,
+      type: map['type'] != null
+          ? TitleType.values.firstWhere((e) => e.code == map['type'])
+          : null,
       qrp: map['qrp'] != null ? map['qrp'] as int : null,
       discount: map['discount'] != null ? map['discount'] as double : null,
       fees: map['fees'] != null ? map['fees'] as double : null,
@@ -95,11 +105,33 @@ class TitleModel {
       userCreate: map['userCreate'] != null ? map['userCreate'] as int : null,
       userAcquittance:
           map['userAcquittance'] != null ? map['userAcquittance'] as int : null,
-      dateCreated:
-          map['dateCreated'] != null ? map['dateCreated'] as String : null,
+      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
       dateAcquittance: map['dateAcquittance'] != null
           ? map['dateAcquittance'] as String
           : null,
+      dueDate: map['dueDate'] != null ? map['dueDate'] as String : null,
+      faceValue: map['faceValue'] != null ? map['faceValue'] as double : null,
+    );
+  }
+
+  factory TitleModel.fromDb(Map<String, dynamic> map) {
+    return TitleModel(
+      id: map["ID"],
+      name: map["NAME"],
+      description: map["DESCRIPTION"],
+      person: map["PERSON"],
+      status: TitleStatus.values.firstWhere((e) => e.code == map["STATUS"]),
+      type: TitleType.values.firstWhere((e) => e.code == map["TYPE"]),
+      qrp: map["QRP"],
+      discount: map["DISCOUNT"],
+      fees: map["FEES"],
+      value: map["VALUE"],
+      userCreate: map["USERCREATE"],
+      userAcquittance: map["USERACQUITTANCE"],
+      createdAt: map["CREATEDAT"],
+      dueDate: map["DUEDATE"],
+      dateAcquittance: map["DATEACQUITTANCE"],
+      faceValue: map["FACEVALUE"],
     );
   }
 
@@ -117,13 +149,14 @@ class TitleModel {
     return TitleModel(
       name: "Titulo Corte: ${cut.id}",
       description: "Titulo corte de numero: ${cut.id} - Nome: ${cut.name}",
-      status: TitleStatus.active.code,
+      status: TitleStatus.active,
       person: person.id,
       userCreate: usercreate.id,
       qrp: cut.qrp,
-      dateCreated: DateTimeAdapter().getDateTimeNowBR(),
-      type: TitleType.obligation.code,
+      createdAt: DateTimeAdapter().getDateTimeNowBR(),
+      type: TitleType.obligation,
       value: titleValue,
+      faceValue: titleValue,
     );
   }
 }
