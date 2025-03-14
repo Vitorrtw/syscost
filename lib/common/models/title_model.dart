@@ -34,12 +34,12 @@ class TitleModel {
   final int? person;
   final TitleStatus? status;
   final TitleType? type;
-  final int? qrp;
+  int? qrp;
   final double? discount;
   final double? fees;
   final double? value;
   final double? faceValue;
-  final int? userCreate;
+  int? userCreate;
   final int? userAcquittance;
   final String? createdAt;
   final String? dueDate;

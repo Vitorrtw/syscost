@@ -24,7 +24,7 @@ class PersonController extends ChangeNotifier {
       return null;
     }
 
-    List personList = personsDataList.data.map(_createPersonModel).toList();
+    List personList = personsDataList.data.map(PersonModel.fromDb).toList();
     return personList;
   }
 
@@ -36,7 +36,7 @@ class PersonController extends ChangeNotifier {
       if (personDataList.error != null) {
         throw Exception(personDataList.error?.message);
       }
-      List personList = personDataList.data.map(_createPersonModel).toList();
+      List personList = personDataList.data.map(PersonModel.fromDb).toList();
       return personList;
     } catch (e) {
       throw Exception(e);
@@ -52,7 +52,7 @@ class PersonController extends ChangeNotifier {
         throw Exception(personDataList.error?.message);
       }
 
-      List personsList = personDataList.data.map(_createPersonModel).toList();
+      List personsList = personDataList.data.map(PersonModel.fromDb).toList();
       return personsList;
     } catch (e) {
       throw Exception(e);
@@ -122,19 +122,5 @@ class PersonController extends ChangeNotifier {
   void _changeState(PersonState newState) {
     _state = newState;
     notifyListeners();
-  }
-
-  PersonModel _createPersonModel(Map<String, dynamic> personData) {
-    return PersonModel(
-        id: personData["ID"],
-        name: personData["NAME"],
-        status: personData["STATUS"],
-        tell: personData["TELL"],
-        address: personData["ADDRESS"],
-        number: personData["NUMBER"],
-        district: personData["DISTRICT"],
-        city: personData["CITY"],
-        cep: personData["CEP"],
-        uf: personData["UF"]);
   }
 }

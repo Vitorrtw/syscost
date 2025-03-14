@@ -15,8 +15,14 @@ import 'package:syscost/features/title/title_controller.dart';
 class TitleModal extends StatefulWidget {
   final TitleModel? title;
   final TitleController? controller;
+  final VoidCallback onRefresh;
 
-  const TitleModal({super.key, this.title, this.controller});
+  const TitleModal({
+    super.key,
+    this.title,
+    this.controller,
+    required this.onRefresh,
+  });
 
   @override
   State<TitleModal> createState() => _TitleModalState();
@@ -29,6 +35,7 @@ class _TitleModalState extends State<TitleModal> {
   // Variables
   PersonModel? _personSelected;
   final List<String> _titleTypes = ["Pagar", "Receber"];
+  String? _selectedTitleType;
 
   /// Field Controllers
   final titleNameController = TextEditingController();
@@ -39,7 +46,6 @@ class _TitleModalState extends State<TitleModal> {
   final titleDiscountController = TextEditingController();
   final titleFeesController = TextEditingController();
   final titleDescriptionController = TextEditingController();
-  final titleTypeController = TextEditingController();
 
   /// Methods
   double _checkValue(String value) {
@@ -65,7 +71,7 @@ class _TitleModalState extends State<TitleModal> {
       name: titleNameController.text.trim(),
       description: titleDescriptionController.text.trim(),
       person: _personSelected!.id,
-      type: titleTypeController.text == "Pagar"
+      type: _selectedTitleType == "Pagar"
           ? TitleType.obligation
           : TitleType.ownership,
       faceValue: _checkValue(titleValueController.text),
@@ -73,17 +79,48 @@ class _TitleModalState extends State<TitleModal> {
       fees: _checkValue(titleFeesController.text),
       value: titleValue,
       qrp: widget.title?.qrp,
-      status: titleStatusController.text == "Ativo"
-          ? TitleStatus.active
-          : TitleStatus.inactive,
-      dueDate: titleDueDateController.text.trim(),
+      status: widget.title?.status ?? TitleStatus.active,
+      dueDate: titleDueDateController.text.isEmpty
+          ? DateTimeAdapter().getDateNowBR()
+          : titleDueDateController.text.trim(),
       createdAt: DateTimeAdapter().getDateTimeNowBR(),
     );
   }
 
-  Future<void> _saveTitle() async {
-    if (formKey.currentState!.validate() &&
-        titleTypeController.text.isNotEmpty) {
+  void _fillFields() {
+    if (widget.title != null) {
+      titleNameController.text = widget.title!.name!;
+      titleValueController.text = widget.title!.faceValue.toString();
+      titleDiscountController.text = widget.title!.discount.toString();
+      titleFeesController.text = widget.title!.fees.toString();
+      titleDueDateController.text = widget.title!.dueDate.toString();
+      titleDescriptionController.text = widget.title!.description!;
+      _selectedTitleType =
+          widget.title!.type == TitleType.obligation ? "Pagar" : "Receber";
+      _getPerson(); // Get person from database
+    }
+  }
+
+  Future<void> _getPerson() async {
+    final person = await widget.controller!.getPerson(widget.title!.person!);
+    if (person != null) {
+      setState(() {
+        _personSelected = person;
+        titlePersonController.text = _personSelected!.name!;
+      });
+    }
+  }
+
+  Future<void> _saveTitle(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      if (_selectedTitleType == null) {
+        showCustomErrorDialog(
+          context,
+          "Selecione o tipo de título",
+        );
+        return;
+      }
+
       if (!_checkTitleValue()) {
         showCustomErrorDialog(
           context,
@@ -91,7 +128,22 @@ class _TitleModalState extends State<TitleModal> {
         );
         return;
       }
+
+      final title = _createTitle();
+
+      if (widget.title == null) {
+        await widget.controller!.createTitle(title);
+      } else {
+        await widget.controller!.updateTitle(title);
+      }
+      widget.onRefresh();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fillFields();
   }
 
   //////// Form fields
@@ -160,6 +212,7 @@ class _TitleModalState extends State<TitleModal> {
 
   DropdownButtonFormField<String> _titleTypeField() {
     return DropdownButtonFormField<String>(
+      value: _selectedTitleType,
       items: _titleTypes
           .map((String type) => DropdownMenuItem<String>(
                 value: type,
@@ -167,7 +220,9 @@ class _TitleModalState extends State<TitleModal> {
               ))
           .toList(),
       onChanged: (value) {
-        titleTypeController.text = value!;
+        setState(() {
+          _selectedTitleType = value;
+        });
       },
       decoration: const InputDecoration(
         labelText: "Tipo",
@@ -182,8 +237,10 @@ class _TitleModalState extends State<TitleModal> {
     return TextFormField(
       controller: titleValueController,
       validator: Validators.validateGenericNotNull,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
+      ],
       decoration: const InputDecoration(
         prefixText: "R\$ ",
         labelText: "Valor",
@@ -195,8 +252,10 @@ class _TitleModalState extends State<TitleModal> {
   TextFormField _titleDiscountField() {
     return TextFormField(
       controller: titleDiscountController,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
+      ],
       decoration: const InputDecoration(
         prefixText: "R\$ ",
         labelText: "Desconto",
@@ -208,8 +267,10 @@ class _TitleModalState extends State<TitleModal> {
   TextFormField _titleFeesField() {
     return TextFormField(
       controller: titleFeesController,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
+      ],
       decoration: const InputDecoration(
         prefixText: "R\$ ",
         labelText: "Juros",
@@ -352,7 +413,7 @@ class _TitleModalState extends State<TitleModal> {
                                 textColor: Colors.white,
                                 backgroundColor: AppColors.primaryRed,
                                 width: 100,
-                                onPressed: () => _saveTitle(),
+                                onPressed: () => _saveTitle(context),
                               ),
                             )
                           ],

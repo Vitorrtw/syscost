@@ -46,8 +46,8 @@ class _SelectDateState extends State<DateTextField> {
     final DateTime? pecked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
         locale: const Locale("pt", "BR"),
         keyboardType: TextInputType.datetime);
 

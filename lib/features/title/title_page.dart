@@ -28,20 +28,26 @@ class _TitlePageState extends State<TitlePage> {
   // Page controller
   final TitleController _controller = locator.get<TitleController>();
 
+  // Page States
+  bool _isLoading = false;
+  List _titles = [];
+
   void _handleTitleStateChange() {
     switch (_controller.state.runtimeType) {
       case TitleStateLoading:
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (context) => const CustomCircularProgressIndicator(),
         );
         break;
       case TitleStateError:
+        Navigator.of(context).pop();
         showCustomErrorDialog(
             context, (_controller.state as TitleStateError).message);
         break;
       case TitleStateSuccess:
-        Navigator.pop(context);
+        Navigator.of(context).pop();
         showCustomSuccessDialog(
             context, (_controller.state as TitleStateSuccess).message);
         break;
@@ -54,14 +60,34 @@ class _TitlePageState extends State<TitlePage> {
       builder: (context) => TitleModal(
         title: title,
         controller: _controller,
+        onRefresh: _getTitles,
       ),
     );
+  }
+
+  Future<void> _getTitles() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final titles = await _controller.getTitles();
+    setState(() {
+      _titles = titles ?? [];
+      _isLoading = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(_handleTitleStateChange);
+    _getTitles();
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_handleTitleStateChange);
+    super.dispose();
   }
 
   @override
@@ -95,7 +121,13 @@ class _TitlePageState extends State<TitlePage> {
                               style: AppTextStyles.titleText,
                             ),
                           ),
-                          TitleTable(controller: _controller),
+                          TitleTable(
+                            titles: _titles,
+                            isLoading: _isLoading,
+                            onEdit: _showTitleModal,
+                            onToggleStatus: (p0) {},
+                            onDelete: (p0) {},
+                          ),
                         ],
                       ),
                     ),

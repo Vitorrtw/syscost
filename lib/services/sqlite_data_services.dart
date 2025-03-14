@@ -95,10 +95,6 @@ class SqliteDataServices extends DataServices {
 
       final List<Map<String, Object?>> response =
           await dataBase.query(tableName, where: where, limit: 50);
-      if (response.isEmpty) {
-        return DataResult.failure(
-            const GeneralTextException(textCode: "No data to return"));
-      }
 
       return DataResult.success(response);
     } catch (e) {
@@ -116,10 +112,7 @@ class SqliteDataServices extends DataServices {
       final dataBase = await _dataBaseConnect();
 
       final response = await dataBase.query(tableName);
-      if (response.isEmpty) {
-        return DataResult.failure(
-            const GeneralTextException(textCode: "No data to return"));
-      }
+
       return DataResult.success(response);
     } catch (e) {
       return DataResult.failure(GeneralTextException(

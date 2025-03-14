@@ -56,6 +56,21 @@ class PersonModel {
     );
   }
 
+  factory PersonModel.fromDb(Map<String, dynamic> map) {
+    return PersonModel(
+      id: map['ID'],
+      name: map['NAME'],
+      status: map['STATUS'],
+      tell: map['TELL'],
+      address: map['ADDRESS'],
+      number: map['NUMBER'],
+      district: map['DISTRICT'],
+      city: map['CITY'],
+      cep: map['CEP'],
+      uf: map['UF'],
+    );
+  }
+
   String toJson() => json.encode(toMap());
 
   factory PersonModel.fromJson(String source) =>
