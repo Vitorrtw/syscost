@@ -6,12 +6,14 @@ class CutItensModel {
   final String? color;
   final String? size;
   final int? quantity;
+  final int? startQuantity;
 
   CutItensModel({
     required this.cutId,
     required this.color,
     required this.size,
     required this.quantity,
+    required this.startQuantity,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class CutItensModel {
       'color': color,
       'size': size,
       'quantity': quantity,
+      'startQuantity': startQuantity,
     };
   }
 
@@ -29,6 +32,8 @@ class CutItensModel {
       color: map['color'] != null ? map['color'] as String : null,
       size: map['size'] != null ? map['size'] as String : null,
       quantity: map['quantity'] != null ? map['quantity'] as int : null,
+      startQuantity:
+          map['startQuantity'] != null ? map['startQuantity'] as int : null,
     );
   }
 

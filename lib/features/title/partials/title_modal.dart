@@ -84,6 +84,7 @@ class _TitleModalState extends State<TitleModal> {
           ? DateTimeAdapter().getDateNowBR()
           : titleDueDateController.text.trim(),
       createdAt: DateTimeAdapter().getDateTimeNowBR(),
+      userCreate: widget.title?.userCreate,
     );
   }
 
