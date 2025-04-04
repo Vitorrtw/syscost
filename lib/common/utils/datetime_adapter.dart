@@ -43,7 +43,7 @@ class DateTimeAdapter {
     return dateTime;
   }
 
-  String formatDateEndTimeToBR(String dateTime) {
+  String formatDateAndTimeToBR(String dateTime) {
     final dateTimeObj = DateTime.parse(dateTime);
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     return formatter.format(dateTimeObj);

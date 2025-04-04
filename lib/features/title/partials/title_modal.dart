@@ -94,7 +94,8 @@ class _TitleModalState extends State<TitleModal> {
       titleValueController.text = widget.title!.faceValue.toString();
       titleDiscountController.text = widget.title!.discount.toString();
       titleFeesController.text = widget.title!.fees.toString();
-      titleDueDateController.text = widget.title!.dueDate.toString();
+      titleDueDateController.text =
+          DateTimeAdapter().formatDateToBR(widget.title!.dueDate!);
       titleDescriptionController.text = widget.title!.description!;
       _selectedTitleType =
           widget.title!.type == TitleType.obligation ? "Pagar" : "Receber";
@@ -170,7 +171,7 @@ class _TitleModalState extends State<TitleModal> {
       },
       dateState: true,
       initialDate: widget.title != null
-          ? widget.title!.dueDate
+          ? DateTimeAdapter().formatDateToBR(widget.title!.dueDate!)
           : DateTimeAdapter().getDateNowBR(),
     );
   }

@@ -233,6 +233,7 @@ class CutController extends ChangeNotifier {
           color: color,
           size: entry.key,
           quantity: int.tryParse(entry.value.toString()) ?? 0,
+          startQuantity: int.tryParse(entry.value.toString()) ?? 0,
         );
 
         final response = await _dataServices.insertData(
@@ -286,7 +287,8 @@ class CutController extends ChangeNotifier {
         cutId: cutItensData["CUTID"],
         color: cutItensData["COLOR"],
         size: cutItensData["SIZE"],
-        quantity: cutItensData["QUANTITY"]);
+        quantity: cutItensData["QUANTITY"],
+        startQuantity: cutItensData["STARTQUANTITY"]);
   }
 
   Future<void> _deleteCutItens({required int cutId}) async {
